@@ -1,0 +1,41 @@
+using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Interfaces;
+using Infrastructure.Contexts;
+using Infrastructure.Mappers;
+using Microsoft.EntityFrameworkCore;
+using Shared.Constants;
+
+
+namespace Infrastructure.Repositories;
+
+public class UserRepository(XDbContext context) : IUserRepository
+{
+    public async Task<User> CreateUserAsync(User user)
+    {   var userEntity = UserMapper.MapToEntity(user);
+        await context.Users.AddAsync(userEntity);
+        await context.SaveChangesAsync();
+        return user;
+    }
+
+    public async Task<User?> GetByUsernameAsync(string username)
+    {
+         var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
+        return UserMapper.MaptToDomain(userEntity);
+    }
+
+    public async Task<User?> GetUserByEmailAsync(string email)
+    {
+        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
+        return UserMapper.MaptToDomain(userEntity);
+    }
+
+    public async Task<bool> UsernameOrEmailExists(string username, string email)
+    {
+        var userByUsername = await context.Users.AnyAsync(u => u.Username == username);
+        var userByEmail = await context.Users.AnyAsync(u => u.Email == email);
+        return userByUsername || userByEmail;
+    }
+}

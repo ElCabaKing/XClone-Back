@@ -10,5 +10,5 @@ public class ResponseConstants
         return $"Ocurrió un error inesperado. TraceId: {traceId}";
     }
 
-    
+    public const string EMAIL_USERNAME_ALREADY_EXISTS = "El nombre de usuario o el correo electrónico ya existen.";
 }
