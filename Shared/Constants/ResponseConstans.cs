@@ -9,4 +9,6 @@ public class ResponseConstants
     {
         return $"Ocurrió un error inesperado. TraceId: {traceId}";
     }
+
+    
 }
