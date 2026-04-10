@@ -12,7 +12,6 @@ using CloudinaryDotNet;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Settings;
-using Microsoft.Extensions.Options;
 
 namespace Infrastructure;
 
@@ -34,6 +33,7 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(
 configuration.GetSection("Jwt"));
         ConfigureAuthentication(services, configuration);
+        services.AddScoped<ITokenService, TokenService>();
 
         return services;
     }
@@ -53,14 +53,12 @@ configuration[ConfigurationConstants.CloudinaryCloudName],
 configuration[ConfigurationConstants.CloudinaryApiKey],
 configuration[ConfigurationConstants.CloudinaryApiSecret]));
     }
-
+    
     private static void ConfigureAuthentication(
         IServiceCollection services,
         IConfiguration configuration)
     {
-
-        var serviceProvider = services.BuildServiceProvider();
-        var jwt = serviceProvider.GetRequiredService<IOptions<JwtSettings>>().Value;
+        var jwt = GetJwtSettings(configuration);
 
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(jwt.Key)
@@ -78,7 +76,8 @@ configuration[ConfigurationConstants.CloudinaryApiSecret]));
 
                     ValidIssuer = jwt.Issuer,
                     ValidAudience = jwt.Audience,
-                    IssuerSigningKey = key
+                    IssuerSigningKey = key,
+                    ClockSkew = TimeSpan.Zero
                 };
             });
     }
