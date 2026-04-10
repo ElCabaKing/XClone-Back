@@ -9,6 +9,10 @@ using Infrastructure.Repositories;
 using Application.Interfaces;
 using Infrastructure.Services;
 using CloudinaryDotNet;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure;
 
@@ -19,19 +23,22 @@ public static class DependencyInjection
     {
         //Repositories configuration
         services.AddScoped<IUserRepository, UserRepository>();
-        
+
 
 
         //External services configuration
-        services.AddSingleton(ConfigCloudinary(configuration));
+        services.AddSingleton(ConfigureCloudinary(configuration));
         services.AddScoped<IPasswordService, PasswordService>();
         services.AddScoped<ICloudStorage, CloudStorageService>();
-        ConfigDatabase(services, configuration);
-        
+        ConfigureDatabase(services, configuration);
+        services.Configure<JwtSettings>(
+configuration.GetSection("Jwt"));
+        ConfigureAuthentication(services, configuration);
+
         return services;
     }
 
-    public static void ConfigDatabase(IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<XDbContext>(options =>
         options.UseSqlServer(
@@ -39,15 +46,45 @@ public static class DependencyInjection
         ));
     }
 
-    public static Cloudinary ConfigCloudinary(IConfiguration configuration)
+    public static Cloudinary ConfigureCloudinary(IConfiguration configuration)
     {
-             var account = new Account(
-    configuration[ConfigurationConstants.CloudinaryCloudName], 
-    configuration[ConfigurationConstants.CloudinaryApiKey], 
-    configuration[ConfigurationConstants.CloudinaryApiSecret]
-);
+        return new Cloudinary(new Account(
+configuration[ConfigurationConstants.CloudinaryCloudName],
+configuration[ConfigurationConstants.CloudinaryApiKey],
+configuration[ConfigurationConstants.CloudinaryApiSecret]));
+    }
 
-    
-        return new Cloudinary(account);;    
+    private static void ConfigureAuthentication(
+        IServiceCollection services,
+        IConfiguration configuration)
+    {
+
+        var serviceProvider = services.BuildServiceProvider();
+        var jwt = serviceProvider.GetRequiredService<IOptions<JwtSettings>>().Value;
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwt.Key)
+        );
+
+        services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwt.Issuer,
+                    ValidAudience = jwt.Audience,
+                    IssuerSigningKey = key
+                };
+            });
+    }
+    private static JwtSettings GetJwtSettings(IConfiguration configuration)
+    {
+        return configuration.GetSection("Jwt").Get<JwtSettings>()
+            ?? throw new BadConfigurationException(ServicesResponseConstants.JWT_CONFIG_ERROR);
     }
 }

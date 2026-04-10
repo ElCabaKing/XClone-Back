@@ -12,7 +12,8 @@ namespace Infrastructure.Repositories;
 public class UserRepository(XDbContext context) : IUserRepository
 {
     public async Task<User> CreateUserAsync(User user)
-    {   var userEntity = UserMapper.MapToEntity(user);
+    {
+        var userEntity = UserMapper.MapToEntity(user);
         await context.Users.AddAsync(userEntity);
         await context.SaveChangesAsync();
         return user;
@@ -20,7 +21,7 @@ public class UserRepository(XDbContext context) : IUserRepository
 
     public async Task<User?> GetByUsernameAsync(string username)
     {
-         var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
         if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
         return UserMapper.MaptToDomain(userEntity);
     }
