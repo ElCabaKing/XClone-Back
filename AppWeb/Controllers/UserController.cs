@@ -1,10 +1,6 @@
 using Application.Modules.User.CreateUser;
-using AppWeb.Requests.User;
-using Domain.Exceptions;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+using AppWeb.Requests.User; 
 using Microsoft.AspNetCore.Mvc;
-using Shared.Constants;
 
 namespace AppWeb.Controllers
 {

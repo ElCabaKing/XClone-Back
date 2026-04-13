@@ -7,7 +7,7 @@ using Shared.Helpers;
 using UserDomain = Domain.Entities.User;
 namespace Application.Modules.User.CreateUser;
 
-public class CreateUserHandler(IPasswordService passwordService, 
+public class CreateUserHandler(IPasswordService passwordService,
 IUserRepository userRepository,
 ICloudStorage cloudStorage)
 {
@@ -20,22 +20,35 @@ ICloudStorage cloudStorage)
 
         var HashedPassword = passwordService.HashPassword(command.Password);
 
+        await using var profilePictureStream = command.ProfilePicture;
+
+        string? profilePictureUrl = null;
+
+        if (command.ProfilePicture != null)
+        {
+            await using var stream = command.ProfilePicture;
+
+            profilePictureUrl = await cloudStorage.UploadFileAsync(
+               stream,
+               command.ProfilePictureFileName!
+           );
+        }
 
         var user = MapToDomain(
-            command, HashedPassword, 
-            command.ProfilePicture != null ? 
-            await cloudStorage.UploadFileAsync(command.ProfilePicture, command.ProfilePictureFileName!) : null);
+            command, HashedPassword,
+            command.ProfilePicture != null ?
+          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL);
 
         var response = await userRepository.CreateUserAsync(user);
 
         return ResponseHelper.Create(new CreateUserResponse(
-            response.Id, 
-            response.Username, 
-            response.Email, 
-            response.FirstName, 
-            response.LastName, 
+            response.Id,
+            response.Username,
+            response.Email,
+            response.FirstName,
+            response.LastName,
             response.ProfilePictureUrl)
-            
+
         );
 
     }
@@ -50,7 +63,7 @@ ICloudStorage cloudStorage)
             PasswordHash = passwordHash,
             FirstName = command.FirstName,
             LastName = command.LastName,
-            ProfilePictureUrl = profilePictureUrl?? null,
+            ProfilePictureUrl = profilePictureUrl ?? null,
             Status = Domain.Enums.UserStatusEnum.Active
         };
     }

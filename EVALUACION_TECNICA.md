@@ -73,6 +73,8 @@ MaptToDomain            // Debería ser: MapToDomain
 **Impacto:** Confusión en el equipo, mantencibilidad pobre  
 **Severidad:** ALTA
 
+Solucionado
+
 #### 2. **Validaciones de Archivo Faltantes**
 ```csharp
 // ❌ En UserController.cs - NO HAY VALIDACIÓN DE:
@@ -94,6 +96,8 @@ public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request
         request.ProfilePicture?.ContentType
     );
 }
+
+solucionado
 ```
 **Impacto:** Vulnerabilidad de seguridad - Arbitrary File Upload  
 **Severidad:** CRÍTICA
@@ -111,6 +115,8 @@ public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request
 **Impacto:** Puede permitir datos inválidos  
 **Severidad:** MEDIA
 
+solucionado
+
 #### 4. **Stream No Cerrado**
 ```csharp
 // En CreateUserHandler.cs
@@ -126,6 +132,8 @@ var user = MapToDomain(
 **Impacto:** Fuga de memoria en producción  
 **Severidad:** ALTA
 
+solucionado
+
 #### 5. **Sin Rate Limiting**
 ```csharp
 // ❌ FALTA - Protección contra fuerza bruta/DDoS
@@ -134,6 +142,8 @@ public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request
 {
     // Cualquiera puede hacer 10,000 requests/min
 }
+
+solucionado
 ```
 **Impacto:** Vulnerable a ataques de fuerza bruta  
 **Severidad:** ALTA

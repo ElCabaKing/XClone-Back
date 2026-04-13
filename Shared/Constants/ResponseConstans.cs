@@ -9,6 +9,7 @@ public class ResponseConstants
     {
         return $"Ocurrió un error inesperado. TraceId: {traceId}";
     }
+    public const string TOO_MANY_REQUESTS = "Has excedido el número máximo de solicitudes. Por favor, inténtalo de nuevo más tarde.";
 
     public const string EMAIL_USERNAME_ALREADY_EXISTS = "El nombre de usuario o el correo electrónico ya existen.";
 }

@@ -1,7 +1,7 @@
 using Application.Modules.Auth.Login;
 using AppWeb.Requests.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace AppWeb.Controllers
 {
@@ -11,6 +11,7 @@ namespace AppWeb.Controllers
         LoginHandler loginHandler
     ) : ControllerBase
     {
+        [EnableRateLimiting("Fixed")]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
