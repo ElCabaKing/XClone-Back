@@ -7,7 +7,7 @@ using Shared.Helpers;
 using UserDomain = Domain.Entities.User;
 namespace Application.Modules.User.CreateUser;
 
-public class CreateUSerHandler(IPasswordService passwordService, 
+public class CreateUserHandler(IPasswordService passwordService, 
 IUserRepository userRepository,
 ICloudStorage cloudStorage)
 {

@@ -8,7 +8,7 @@ public static class DependencyInyection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddScoped<CreateUSerHandler>();
+        services.AddScoped<CreateUserHandler>();
         
         return services;
     }

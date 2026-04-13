@@ -44,17 +44,23 @@ public partial class XDbContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserRole> UserRoles { get; set; }
+
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=localhost,1433;User=sa;Password=YourStrong@Password123;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BanList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83FA39CD2A8");
+            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83F8969B1B1");
 
             entity.ToTable("ban_list");
 
-            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F657F356D7").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F6A59779D6").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -68,16 +74,16 @@ public partial class XDbContext : DbContext
             entity.HasOne(d => d.BannedByNavigation).WithMany(p => p.BanListBannedByNavigations)
                 .HasForeignKey(d => d.BannedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ban_list__banned__3F6663D5");
+                .HasConstraintName("FK__ban_list__banned__4336F4B9");
 
             entity.HasOne(d => d.User).WithMany(p => p.BanListUsers)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__ban_list__user_i__3E723F9C");
+                .HasConstraintName("FK__ban_list__user_i__4242D080");
         });
 
         modelBuilder.Entity<ChatRoom>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83F3F570FB1");
+            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83F164494B9");
 
             entity.ToTable("chat_room");
 
@@ -93,13 +99,13 @@ public partial class XDbContext : DbContext
                     "ChatParticipant",
                     r => r.HasOne<User>().WithMany()
                         .HasForeignKey("UserId")
-                        .HasConstraintName("FK__chat_part__user___75C27486"),
+                        .HasConstraintName("FK__chat_part__user___7993056A"),
                     l => l.HasOne<ChatRoom>().WithMany()
                         .HasForeignKey("ChatId")
-                        .HasConstraintName("FK__chat_part__chat___74CE504D"),
+                        .HasConstraintName("FK__chat_part__chat___789EE131"),
                     j =>
                     {
-                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE867D2104E01");
+                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE8676D85F67D");
                         j.ToTable("chat_participants");
                         j.IndexerProperty<Guid>("ChatId").HasColumnName("chat_id");
                         j.IndexerProperty<Guid>("UserId").HasColumnName("user_id");
@@ -108,11 +114,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<CommentLikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F1AA55E09");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FF81A4D16");
 
             entity.ToTable("comment_like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C7606675C664EF").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C7606641D6A8FD").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -125,17 +131,17 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.Comment).WithMany(p => p.CommentLikeLists)
                 .HasForeignKey(d => d.CommentId)
-                .HasConstraintName("FK__comment_l__comme__62AFA012");
+                .HasConstraintName("FK__comment_l__comme__668030F6");
 
             entity.HasOne(d => d.User).WithMany(p => p.CommentLikeLists)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__comment_l__user___61BB7BD9");
+                .HasConstraintName("FK__comment_l__user___658C0CBD");
         });
 
         modelBuilder.Entity<CommentList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FA3D5018B");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F500DE98D");
 
             entity.ToTable("comment_list");
 
@@ -156,25 +162,25 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.CommentToNavigation).WithMany(p => p.InverseCommentToNavigation)
                 .HasForeignKey(d => d.CommentTo)
-                .HasConstraintName("FK__comment_l__comme__5C02A283");
+                .HasConstraintName("FK__comment_l__comme__5FD33367");
 
             entity.HasOne(d => d.Post).WithMany(p => p.CommentLists)
                 .HasForeignKey(d => d.PostId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__comment_l__post___5B0E7E4A");
+                .HasConstraintName("FK__comment_l__post___5EDF0F2E");
 
             entity.HasOne(d => d.User).WithMany(p => p.CommentLists)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__comment_l__user___5A1A5A11");
+                .HasConstraintName("FK__comment_l__user___5DEAEAF5");
         });
 
         modelBuilder.Entity<FollowList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83F099FB849");
+            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83FDE775B77");
 
             entity.ToTable("follow_list");
 
-            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A68C4303FF").IsUnique();
+            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A6CC983F64").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -187,21 +193,21 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.Follower).WithMany(p => p.FollowListFollowers)
                 .HasForeignKey(d => d.FollowerId)
-                .HasConstraintName("FK__follow_li__follo__4DB4832C");
+                .HasConstraintName("FK__follow_li__follo__51851410");
 
             entity.HasOne(d => d.Following).WithMany(p => p.FollowListFollowings)
                 .HasForeignKey(d => d.FollowingId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__follow_li__follo__4EA8A765");
+                .HasConstraintName("FK__follow_li__follo__52793849");
         });
 
         modelBuilder.Entity<Hashtag>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83FB97D9AFD");
+            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83FE25C8A17");
 
             entity.ToTable("hashtags");
 
-            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1BB1C8E70C").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1B0703B10E").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -216,11 +222,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<HashtagPost>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83FC1FE28BD");
+            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83F0946F1B7");
 
             entity.ToTable("hashtag_post");
 
-            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9B0655351F").IsUnique();
+            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9BC6A169F7").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -233,20 +239,20 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.Hashtag).WithMany(p => p.HashtagPosts)
                 .HasForeignKey(d => d.HashtagId)
-                .HasConstraintName("FK__hashtag_p__hasht__6D2D2E85");
+                .HasConstraintName("FK__hashtag_p__hasht__70FDBF69");
 
             entity.HasOne(d => d.Post).WithMany(p => p.HashtagPosts)
                 .HasForeignKey(d => d.PostId)
-                .HasConstraintName("FK__hashtag_p__post___6E2152BE");
+                .HasConstraintName("FK__hashtag_p__post___71F1E3A2");
         });
 
         modelBuilder.Entity<LikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83FD283CB03");
+            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83F85ED4999");
 
             entity.ToTable("like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F78137ED219").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F782B985467").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -260,16 +266,16 @@ public partial class XDbContext : DbContext
             entity.HasOne(d => d.Post).WithMany(p => p.LikeLists)
                 .HasForeignKey(d => d.PostId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__like_list__post___5555A4F4");
+                .HasConstraintName("FK__like_list__post___592635D8");
 
             entity.HasOne(d => d.User).WithMany(p => p.LikeLists)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__like_list__user___546180BB");
+                .HasConstraintName("FK__like_list__user___5832119F");
         });
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83FAB3DBAA2");
+            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83FF7D5E38A");
 
             entity.ToTable("messages");
 
@@ -288,20 +294,20 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.ChatRoom).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.ChatRoomId)
-                .HasConstraintName("FK__messages__chat_r__7B7B4DDC");
+                .HasConstraintName("FK__messages__chat_r__7F4BDEC0");
 
             entity.HasOne(d => d.Sender).WithMany(p => p.Messages)
                 .HasForeignKey(d => d.SenderId)
-                .HasConstraintName("FK__messages__sender__7C6F7215");
+                .HasConstraintName("FK__messages__sender__004002F9");
         });
 
         modelBuilder.Entity<MuteList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83F04909C1C");
+            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83F19C7F56F");
 
             entity.ToTable("mute_list");
 
-            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08C985847E9").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08C24C5EC8C").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -315,16 +321,16 @@ public partial class XDbContext : DbContext
             entity.HasOne(d => d.MutedByNavigation).WithMany(p => p.MuteListMutedByNavigations)
                 .HasForeignKey(d => d.MutedBy)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__mute_list__muted__4707859D");
+                .HasConstraintName("FK__mute_list__muted__4AD81681");
 
             entity.HasOne(d => d.User).WithMany(p => p.MuteListUsers)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__mute_list__user___46136164");
+                .HasConstraintName("FK__mute_list__user___49E3F248");
         });
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83F3382515C");
+            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83F215FDE32");
 
             entity.ToTable("notifications");
 
@@ -348,12 +354,12 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.User).WithMany(p => p.Notifications)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__notificat__user___02284B6B");
+                .HasConstraintName("FK__notificat__user___05F8DC4F");
         });
 
         modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__post__3213E83FCFDE2AD4");
+            entity.HasKey(e => e.Id).HasName("PK__post__3213E83FB8569942");
 
             entity.ToTable("post");
 
@@ -382,20 +388,20 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.ReplyToNavigation).WithMany(p => p.InverseReplyToNavigation)
                 .HasForeignKey(d => d.ReplyTo)
-                .HasConstraintName("FK__post__reply_to__3118447E");
+                .HasConstraintName("FK__post__reply_to__34E8D562");
 
             entity.HasOne(d => d.RepostOfNavigation).WithMany(p => p.InverseRepostOfNavigation)
                 .HasForeignKey(d => d.RepostOf)
-                .HasConstraintName("FK__post__repost_of__320C68B7");
+                .HasConstraintName("FK__post__repost_of__35DCF99B");
 
             entity.HasOne(d => d.User).WithMany(p => p.Posts)
                 .HasForeignKey(d => d.UserId)
-                .HasConstraintName("FK__post__user_id__30242045");
+                .HasConstraintName("FK__post__user_id__33F4B129");
         });
 
         modelBuilder.Entity<Survey>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83F7F9FD25B");
+            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83F3429B126");
 
             entity.ToTable("survey");
 
@@ -411,18 +417,18 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.Post).WithMany(p => p.Surveys)
                 .HasForeignKey(d => d.PostId)
-                .HasConstraintName("FK__survey__post_id__36D11DD4");
+                .HasConstraintName("FK__survey__post_id__3AA1AEB8");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user__3213E83F41E9CC29");
+            entity.HasKey(e => e.Id).HasName("PK__user__3213E83FCD1B4488");
 
             entity.ToTable("user");
 
-            entity.HasIndex(e => e.Email, "UQ__user__AB6E6164444CE62E").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__user__AB6E616471CEF106").IsUnique();
 
-            entity.HasIndex(e => e.Username, "UQ__user__F3DBC572058C3B64").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ__user__F3DBC57200D6BA22").IsUnique();
 
             entity.Property(e => e.Id)
                 .HasDefaultValueSql("(newid())")
@@ -436,7 +442,6 @@ public partial class XDbContext : DbContext
             entity.Property(e => e.FirstName)
                 .HasMaxLength(255)
                 .HasColumnName("first_name");
-            entity.Property(e => e.IsVerified).HasColumnName("is_verified");
             entity.Property(e => e.LastName)
                 .HasMaxLength(255)
                 .HasColumnName("last_name");
@@ -446,6 +451,9 @@ public partial class XDbContext : DbContext
             entity.Property(e => e.ProfilePictureUrl)
                 .HasMaxLength(255)
                 .HasColumnName("profile_picture_url");
+            entity.Property(e => e.RoleId)
+                .HasDefaultValue((byte)2)
+                .HasColumnName("role_id");
             entity.Property(e => e.StatusId)
                 .HasDefaultValue((byte)1)
                 .HasColumnName("status_id");
@@ -453,19 +461,38 @@ public partial class XDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("username");
 
+            entity.HasOne(d => d.Role).WithMany(p => p.Users)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Role");
+
             entity.HasOne(d => d.Status).WithMany(p => p.Users)
                 .HasForeignKey(d => d.StatusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_Status");
         });
 
+        modelBuilder.Entity<UserRole>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83F1F3AD71D");
+
+            entity.ToTable("user_role");
+
+            entity.HasIndex(e => e.Name, "UQ__user_rol__72E12F1BD684533C").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasColumnName("name");
+        });
+
         modelBuilder.Entity<UserStatus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83F5911EDDE");
+            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83F79708785");
 
             entity.ToTable("user_status");
 
-            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1B15642442").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1BC2188CB7").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)

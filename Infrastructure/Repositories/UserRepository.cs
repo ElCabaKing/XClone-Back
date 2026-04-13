@@ -23,14 +23,14 @@ public class UserRepository(XDbContext context) : IUserRepository
     {
         var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
         if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MaptToDomain(userEntity);
+        return UserMapper.MapToDomain(userEntity);
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
         var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MaptToDomain(userEntity);
+        return UserMapper.MapToDomain(userEntity);
     }
 
     public async Task<bool> UsernameOrEmailExists(string username, string email)

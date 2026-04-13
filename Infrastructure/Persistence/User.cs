@@ -15,7 +15,7 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
-    public bool IsVerified { get; set; }
+    public byte RoleId { get; set; }
 
     public byte StatusId { get; set; }
 
@@ -48,6 +48,8 @@ public partial class User
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public virtual UserRole Role { get; set; } = null!;
 
     public virtual UserStatus Status { get; set; } = null!;
 

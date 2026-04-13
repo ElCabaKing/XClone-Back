@@ -4,22 +4,21 @@ namespace Infrastructure.Mappers;
 
 public class UserMapper
 {
-    public static UserDomain MaptToDomain(UserEntity user)
+    public static UserDomain MapToDomain(UserEntity user)
     {
         return new UserDomain
         {
+
             Id = user.Id,
             Username = user.Username,
             Email = user.Email,
             PasswordHash = user.PasswordHash,
-            Role = user.Status.Name,
+            Role = (Domain.Enums.UserRoleEnum)user.RoleId,
             CreatedAt = user.CreatedAt,
-            IsVerified = user.IsVerified,
             Status = (Domain.Enums.UserStatusEnum)user.StatusId,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            ProfilePictureUrl = user.ProfilePictureUrl ?? string.Empty
-            
+            ProfilePictureUrl = user.ProfilePictureUrl ?? string.Empty  
         };
     }
 
@@ -27,16 +26,17 @@ public class UserMapper
     {
         return new UserEntity
         {
-            Id = user.Id,
-            Username = user.Username,
-            Email = user.Email,
-            PasswordHash = user.PasswordHash,
-            CreatedAt = user.CreatedAt,
-            IsVerified = user.IsVerified,
-            StatusId = (byte)user.Status,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            ProfilePictureUrl = user.ProfilePictureUrl ?? string.Empty
+
+                Id = Guid.NewGuid(),
+                Username = user.Username,
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                RoleId = (byte)user.Role,
+                CreatedAt = DateTime.UtcNow,
+                StatusId = (byte)user.Status,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                ProfilePictureUrl = user.ProfilePictureUrl
         };
     }
 }

@@ -1,7 +1,10 @@
 using Application.Modules.User.CreateUser;
 using AppWeb.Requests.User;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Shared.Constants;
 
 namespace AppWeb.Controllers
 {
@@ -9,25 +12,32 @@ namespace AppWeb.Controllers
     [ApiController]
     public class UserController
     (
-        CreateUSerHandler createUSerHandler
+        CreateUserHandler createUserHandler
     ) : ControllerBase
     {
 
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request)
         {
-                var command = new CreateUserCommand(
-                   request.Username,
-                   request.Email,
-                   request.Password,
-                   request.FirstName,
-                   request.LastName,
-                   request.ProfilePicture?.OpenReadStream(),
-                   request.ProfilePicture?.FileName,
-                   request.ProfilePicture?.ContentType
-               );
-                var result = await createUSerHandler.Handle(command);
-                return Ok(result);
+            if (request.ProfilePicture is not null)
+            {
+                if (request.ProfilePicture.Length > MediaConstants.MAX_PROFILE_PICTURE_SIZE_BYTES)
+                    throw new BadRequestException(MediaConstants.PROFILE_TOO_LARGE);
+                if (!MediaConstants.ALLOWED_PROFILE_PICTURE_TYPES.Contains(request.ProfilePicture.ContentType))
+                    throw new BadRequestException(MediaConstants.PROFILE_INVALID_TYPE);
             }
+            var command = new CreateUserCommand(
+                request.Username,
+                request.Email,
+                request.Password,
+                request.FirstName,
+                request.LastName,
+                request.ProfilePicture?.OpenReadStream(),
+                request.ProfilePicture?.FileName,
+                request.ProfilePicture?.ContentType
+           );
+            var result = await createUserHandler.Handle(command);
+            return Ok(result);
         }
     }
+}
