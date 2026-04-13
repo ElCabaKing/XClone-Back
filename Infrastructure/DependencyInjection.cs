@@ -12,6 +12,8 @@ using CloudinaryDotNet;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Settings;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Infrastructure;
 
@@ -53,7 +55,7 @@ configuration[ConfigurationConstants.CloudinaryCloudName],
 configuration[ConfigurationConstants.CloudinaryApiKey],
 configuration[ConfigurationConstants.CloudinaryApiSecret]));
     }
-    
+
     private static void ConfigureAuthentication(
         IServiceCollection services,
         IConfiguration configuration)
@@ -79,7 +81,20 @@ configuration[ConfigurationConstants.CloudinaryApiSecret]));
                     IssuerSigningKey = key,
                     ClockSkew = TimeSpan.Zero
                 };
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Cookies["access_token"];
+                        if (!string.IsNullOrEmpty(accessToken))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
             });
+
     }
     private static JwtSettings GetJwtSettings(IConfiguration configuration)
     {

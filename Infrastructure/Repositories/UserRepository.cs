@@ -39,4 +39,21 @@ public class UserRepository(XDbContext context) : IUserRepository
         var userByEmail = await context.Users.AnyAsync(u => u.Email == email);
         return userByUsername || userByEmail;
     }
+
+    public async Task<User?> UpdateUserAsync(User user)
+    {
+        var userEntity = await context.Users.FindAsync(user.Id);
+        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
+
+        userEntity.FirstName = user.FirstName ?? userEntity.FirstName;
+        userEntity.LastName = user.LastName ?? userEntity.LastName;
+        userEntity.Email = user.Email ?? userEntity.Email;
+        userEntity.Username = user.Username ?? userEntity.Username;
+        if (user.ProfilePictureUrl != null)
+            userEntity.ProfilePictureUrl = user.ProfilePictureUrl;
+
+        context.Users.Update(userEntity);
+        await context.SaveChangesAsync();
+        return UserMapper.MapToDomain(userEntity);
+    }
 }

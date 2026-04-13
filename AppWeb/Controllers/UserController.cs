@@ -19,13 +19,6 @@ namespace AppWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request)
         {
-            if (request.ProfilePicture is not null)
-            {
-                if (request.ProfilePicture.Length > MediaConstants.MAX_PROFILE_PICTURE_SIZE_BYTES)
-                    throw new BadRequestException(MediaConstants.PROFILE_TOO_LARGE);
-                if (!MediaConstants.ALLOWED_PROFILE_PICTURE_TYPES.Contains(request.ProfilePicture.ContentType))
-                    throw new BadRequestException(MediaConstants.PROFILE_INVALID_TYPE);
-            }
             var command = new CreateUserCommand(
                 request.Username,
                 request.Email,

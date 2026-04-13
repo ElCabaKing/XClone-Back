@@ -11,12 +11,12 @@ namespace Infrastructure.Services;
 
 public class TokenService (IOptions<JwtSettings> options): ITokenService
 {
-    public string CreateRefreshToken(string userId)
+    public string CreateRefreshToken(Guid userId)
     {
         throw new NotImplementedException();
     }
 
-    public string CreateToken(string userId)
+    public string CreateToken(Guid userId)
     {
         var jwt = options.Value;
         var key = new SymmetricSecurityKey(
@@ -30,7 +30,7 @@ public class TokenService (IOptions<JwtSettings> options): ITokenService
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId)
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString())
         };
 
         var token = new JwtSecurityToken(
