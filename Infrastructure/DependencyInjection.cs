@@ -12,7 +12,6 @@ using CloudinaryDotNet;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Settings;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Infrastructure;
@@ -24,7 +23,7 @@ public static class DependencyInjection
     {
         //Repositories configuration
         services.AddScoped<IUserRepository, UserRepository>();
-
+        services.AddScoped<ITokenRepository, TokenRepository>();
 
 
         //External services configuration

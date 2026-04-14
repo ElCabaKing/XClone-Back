@@ -32,9 +32,11 @@ public class UserRepository(XDbContext context) : IUserRepository
         return exists;
     }
 
-    public async Task<User?> UpdateUserAsync(User user)
+    public async Task<User> UpdateUserAsync(User user)
     {
-        var userEntity = await context.Users.FindAsync(user.Id);
+        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        Console.WriteLine($"Updating user with ID: {user.Id}");
         if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
 
         userEntity.FirstName = user.FirstName ?? userEntity.FirstName;

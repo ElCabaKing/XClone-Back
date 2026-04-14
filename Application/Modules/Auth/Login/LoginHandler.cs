@@ -7,7 +7,8 @@ namespace Application.Modules.Auth.Login;
 
 public class LoginHandler(ITokenService tokenService,
 IUserRepository userRepository,
-IPasswordService passwordService)
+IPasswordService passwordService,
+ITokenRepository tokenRepository) 
 {
     /// <summary>
     /// Maneja la autenticacion de un usuario existente
@@ -22,10 +23,18 @@ IPasswordService passwordService)
         }
 
         var token = tokenService.CreateToken(user.Id);
+        var refreshToken = tokenService.CreateRefreshToken();
+        await tokenRepository.StoreRefreshTokenAsync(new Domain.Entities.Token
+        {
+            UserId = user.Id,
+            RefreshToken = refreshToken,
+            ExpiryDate = DateTime.UtcNow.AddDays(30)
+        });
+
         return new LoginResponse
         {
             Token = token,
-            RefreshToken = "sercies.CreateRefreshToken(user.Id)"
+            RefreshToken = refreshToken
         };
     }
 }

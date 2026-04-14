@@ -53,5 +53,7 @@ public partial class User
 
     public virtual UserStatus Status { get; set; } = null!;
 
+    public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
+
     public virtual ICollection<ChatRoom> Chats { get; set; } = new List<ChatRoom>();
 }

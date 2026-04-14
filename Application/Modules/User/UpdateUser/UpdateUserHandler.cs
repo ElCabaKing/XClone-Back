@@ -1,5 +1,9 @@
 using Application.Interfaces;
 using Domain.Interfaces;
+using Shared.Generics;
+using Domain.Entities;
+using UserDomain = Domain.Entities.User;
+using Shared.Helpers;
 
 namespace Application.Modules.User.UpdateUser;
 
@@ -10,17 +14,27 @@ public class UpdateUserHandler(
     /// <summary>
     /// Maneja la actualización de un usuario existente menos su contraseña y foto de perfil, para mantener la simplicidad del ejemplo. En un caso real, se podrían manejar estas actualizaciones en comandos separados.
     /// </summary>
-    public Task Handle(UpdateUserCommand command)
+    public async Task<GenericResponse<UpdateUserResponse>> Handle(UpdateUserCommand command)
     {
+        var response = await userRepository.UpdateUserAsync(MapToDomain(command));
+        return ResponseHelper.Create(new UpdateUserResponse(
+            response.Id,
+            response.Username,
+            response.Email,
+            response.FirstName,
+            response.LastName
+        ));
+    }
 
-        return userRepository.UpdateUserAsync(new Domain.Entities.User
+    public static UserDomain MapToDomain(UpdateUserCommand command)
+    {
+        return new UserDomain
         {
             Id = command.UserId,
-            Username = command.Username ?? string.Empty,
-            Email = command.Email ?? string.Empty,
-            FirstName = command.FirstName ?? string.Empty,
-            LastName = command.LastName ?? string.Empty,
-            // ProfilePicture handling would go here, but is omitted for brevity
-        });
+            Username = command.Username,
+            Email = command.Email,
+            FirstName = command.FirstName,
+            LastName = command.LastName
+        };
     }
 }

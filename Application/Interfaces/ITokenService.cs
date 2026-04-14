@@ -4,5 +4,5 @@ namespace Application.Interfaces;
 public interface ITokenService
 {
     string CreateToken(Guid userId);
-    string CreateRefreshToken(Guid userId);
+    string CreateRefreshToken();
 }

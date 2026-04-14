@@ -38,12 +38,10 @@ ICloudStorage cloudStorage)
            );
         }
 
-        var user = MapToDomain(
+        var response = await userRepository.CreateUserAsync(MapToDomain(
             command, HashedPassword,
             command.ProfilePicture != null ?
-          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL);
-
-        var response = await userRepository.CreateUserAsync(user);
+          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL));
 
         return ResponseHelper.Create(new CreateUserResponse(
             response.Id,

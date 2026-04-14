@@ -1,4 +1,5 @@
 using Application.Modules.User.CreateUser;
+using Application.Modules.User.UpdateUser;
 using AppWeb.Requests.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,12 @@ namespace AppWeb.Controllers
     [ApiController]
     public class UserController
     (
-        CreateUserHandler createUserHandler
+        CreateUserHandler createUserHandler,
+        UpdateUserHandler updateUserHandler
     ) : ControllerBase
     {
 
-        [HttpPost]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request)
         {
             if (!ModelState.IsValid)
@@ -29,6 +31,22 @@ namespace AppWeb.Controllers
                 request.ProfilePicture?.ContentType
            );
             var result = await createUserHandler.Handle(command);
+            return Ok(result);
+        }
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var command = new UpdateUserCommand(
+                request.UserId,
+                request.Username,
+                request.Email,
+                request.FirstName,
+                request.LastName
+            );
+            var result = await updateUserHandler.Handle(command);
             return Ok(result);
         }
     }

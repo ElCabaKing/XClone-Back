@@ -6,14 +6,15 @@ using Application.Interfaces;
 using Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Shared.Helpers;
 
 namespace Infrastructure.Services;
 
 public class TokenService (IOptions<JwtSettings> options): ITokenService
 {
-    public string CreateRefreshToken(Guid userId)
+    public string CreateRefreshToken()
     {
-        throw new NotImplementedException();
+        return TokenHelper.GenerateRefreshToken();
     }
 
     public string CreateToken(Guid userId)
