@@ -32,6 +32,12 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseCors(
+    policy =>
+        policy.AllowCredentials()
+        .WithOrigins("http://localhost:3000")
+);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

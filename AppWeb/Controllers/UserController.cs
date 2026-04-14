@@ -1,5 +1,5 @@
 using Application.Modules.User.CreateUser;
-using AppWeb.Requests.User; 
+using AppWeb.Requests.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers
@@ -15,6 +15,9 @@ namespace AppWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var command = new CreateUserCommand(
                 request.Username,
                 request.Email,

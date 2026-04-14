@@ -2,10 +2,10 @@
 namespace Application.Modules.Auth.Login;
 
 public class LoginCommand(
-    string username,
+    string credential,
     string password
 )
 {
-    public string Username { get; set; } = username;
+    public string Credential { get; set; } = credential;
     public string Password { get; set; } = password;
 }

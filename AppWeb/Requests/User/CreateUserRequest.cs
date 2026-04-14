@@ -9,6 +9,7 @@ public class CreateUserRequest
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]
     [MaxLength(150, ErrorMessage = ValidationConstants.MAX_LENGTH)]
     [MinLength(10, ErrorMessage = ValidationConstants.MIN_LENGTH)]
+    [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = ValidationConstants.USERNAME_ALPHANUMERIC)]
     public string Username { get; set; } = default!;
 
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]
@@ -17,6 +18,8 @@ public class CreateUserRequest
 
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]
     [MinLength(6, ErrorMessage = ValidationConstants.MIN_LENGTH)]
+    [MaxLength(100, ErrorMessage = ValidationConstants.MAX_LENGTH)]
+    [HasSpecialCharacter(ErrorMessage = ValidationConstants.PASSWORD_SPECIAL_CHAR)]
     public string Password { get; set; } = default!;
 
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]

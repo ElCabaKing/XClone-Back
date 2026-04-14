@@ -11,6 +11,10 @@ public class CreateUserHandler(IPasswordService passwordService,
 IUserRepository userRepository,
 ICloudStorage cloudStorage)
 {
+
+    /// <summary>
+    /// Maneja la creación de un nuevo usuario
+    /// </summary>
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
         if (await userRepository.UsernameOrEmailExists(command.Username, command.Email))

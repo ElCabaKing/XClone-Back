@@ -9,9 +9,12 @@ public class LoginHandler(ITokenService tokenService,
 IUserRepository userRepository,
 IPasswordService passwordService)
 {
+    /// <summary>
+    /// Maneja la autenticacion de un usuario existente
+    /// </summary>
     public async Task<LoginResponse> Handle(LoginCommand command)
     {
-        var user = await userRepository.GetByUsernameAsync(command.Username);
+        var user = await userRepository.GetByUsernameorEmailAsync(command.Credential);
 
         if (user == null || !passwordService.VerifyPassword(command.Password, user.PasswordHash))
         {

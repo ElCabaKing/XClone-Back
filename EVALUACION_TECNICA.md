@@ -168,6 +168,8 @@ public string Password { get; set; } = default!;
 **Impacto:** Contraseñas débiles comprometen seguridad  
 **Severidad:** MEDIA-ALTA
 
+solucionado (solo algnos somos flexibles)
+
 #### 7. **Configuración de CORS No Visible**
 ```csharp
 // En Program.cs - NO HAY CORS configurado
@@ -177,6 +179,7 @@ var app = builder.Build();
 ```
 **Impacto:** Riesgo de CSRF, acceso no autorizado  
 **Severidad:** MEDIA
+solucionado
 
 #### 8. **Sin Versionado de API**
 ```csharp
@@ -185,7 +188,7 @@ var app = builder.Build();
 ```
 **Impacto:** Dificulta cambios futuros sin breaking changes  
 **Severidad:** MEDIA
-
+pregunta(se cambia todo por cada version de api, o solo se cambia en el endpoint que recibio cambios?)
 ---
 
 ### 🟡 **NIVEL MEDIO**
@@ -219,6 +222,8 @@ public class CreateUSerHandler(...)
 **Impacto:** Documentación pobre, autocompletar limitado  
 **Severidad:** BAJA-MEDIA
 
+solucionado (solo tendra en los casos de uso)
+
 #### 11. **Timestamps No Automáticos en BD**
 ```csharp
 // En Persistence/User.cs
@@ -231,6 +236,7 @@ public DateTime CreatedAt { get; set; }  // ❌ No tiene default en BD
 **Impacto:** Auditoría incompleta  
 **Severidad:** BAJA
 
+solucionado el resto ya tiene por default menos editado que no se va a usar
 ---
 
 ## 🔒 ANÁLISIS DE SEGURIDAD
@@ -284,7 +290,7 @@ public async Task CreateUser_WithLargeFile_ReturnsError()
     // Test file size limit
 }
 ```
-
+solucionado solo se haran test unitarios
 ---
 
 ## 📊 CÓDIGO DUPLICADO/MEJORABLE
@@ -304,6 +310,7 @@ var exists = await context.Users.AnyAsync(u =>
     u.Username == username || u.Email == email
 );
 ```
+solucionado
 
 ### 2. **GenericResponse Inconsistente**
 ```csharp
@@ -315,7 +322,7 @@ public static GenericResponse<T> Create<T>(T data, ...)
     // y ResponseConstants también - CONSISTENTE pero revisar
 }
 ```
-
+no se encontro las inconsistencias
 ---
 
 ## 📈 RECOMENDACIONES POR PRIORIDAD

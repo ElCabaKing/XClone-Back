@@ -19,25 +19,17 @@ public class UserRepository(XDbContext context) : IUserRepository
         return user;
     }
 
-    public async Task<User?> GetByUsernameAsync(string username)
+    public async Task<User?> GetByUsernameorEmailAsync(string credential)
     {
-        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == username);
-        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MapToDomain(userEntity);
-    }
-
-    public async Task<User?> GetUserByEmailAsync(string email)
-    {
-        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == credential || u.Email == credential);
         if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
         return UserMapper.MapToDomain(userEntity);
     }
 
     public async Task<bool> UsernameOrEmailExists(string username, string email)
     {
-        var userByUsername = await context.Users.AnyAsync(u => u.Username == username);
-        var userByEmail = await context.Users.AnyAsync(u => u.Email == email);
-        return userByUsername || userByEmail;
+        var exists = await context.Users.AnyAsync(u => u.Username == username || u.Email == email);
+        return exists;
     }
 
     public async Task<User?> UpdateUserAsync(User user)

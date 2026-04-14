@@ -4,10 +4,12 @@ using Domain.Interfaces;
 namespace Application.Modules.User.UpdateUser;
 
 public class UpdateUserHandler(
-    IUserRepository userRepository,
-    ICloudStorage   cloudStorage
+    IUserRepository userRepository
 )
 {
+    /// <summary>
+    /// Maneja la actualización de un usuario existente menos su contraseña y foto de perfil, para mantener la simplicidad del ejemplo. En un caso real, se podrían manejar estas actualizaciones en comandos separados.
+    /// </summary>
     public Task Handle(UpdateUserCommand command)
     {
 

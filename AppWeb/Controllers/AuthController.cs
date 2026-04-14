@@ -15,6 +15,9 @@ namespace AppWeb.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             var command = new LoginCommand(
                 request.Username,
                 request.Password
