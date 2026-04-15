@@ -15,6 +15,7 @@ public class CreateUserTest
         var passwordServiceMock = new Mock<IPasswordService>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var emailServiceMock = new Mock<IEmailService>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(false);
@@ -35,7 +36,7 @@ public class CreateUserTest
                 ProfilePictureUrl = user.ProfilePictureUrl
             });
 
-        var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
+        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "epicouser@example.com", "Password123!", "Test", "User");
 
         // Act
@@ -57,11 +58,12 @@ public class CreateUserTest
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var emailServiceMock = new Mock<IEmailService>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(true);
 
-        var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
+        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("existinguser", "new@example.com", "Password123!", "Test", "User");
 
         // Act & Assert
@@ -75,6 +77,7 @@ public class CreateUserTest
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var emailServiceMock = new Mock<IEmailService>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(false);
@@ -85,7 +88,7 @@ public class CreateUserTest
         cloudStorageMock.Setup(storage => storage.UploadFileAsync(It.IsAny<Stream>(), It.IsAny<string>()))
             .ReturnsAsync(string.Empty); // Simula un fallo en la subida
 
-        var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
+        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg");
 
         // Act & Assert
@@ -99,6 +102,7 @@ public class CreateUserTest
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var emailServiceMock = new Mock<IEmailService>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(false);
@@ -112,7 +116,7 @@ public class CreateUserTest
         userRepositoryMock.Setup(repo => repo.CreateUserAsync(It.IsAny<Domain.Entities.User>()))
             .ReturnsAsync((Domain.Entities.User?)null); // Simula un fallo en la inserción
 
-        var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
+        var handler = new CreateUserHandler(emailServiceMock.Object,passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg");
 
         // Act & Assert
@@ -126,11 +130,12 @@ public class CreateUserTest
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var emailServiceMock = new Mock<IEmailService>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ThrowsAsync(new ServiceErrorException("Database error"));
 
-        var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
+        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg"   );
 
         // Act & Assert
