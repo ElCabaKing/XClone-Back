@@ -7,7 +7,9 @@ using Shared.Helpers;
 using UserDomain = Domain.Entities.User;
 namespace Application.Modules.User.CreateUser;
 
-public class CreateUserHandler(IPasswordService passwordService,
+public class CreateUserHandler(
+    IEmailService emailService,
+IPasswordService passwordService,
 IUserRepository userRepository,
 ICloudStorage cloudStorage)
 {
@@ -17,6 +19,7 @@ ICloudStorage cloudStorage)
     /// </summary>
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
+        await emailService.SendEmailAsync(command.Email, "Welcome to XClone!", "Thank you for registering at XClone. We're excited to have you on board!");
         if (await userRepository.UsernameOrEmailExists(command.Username, command.Email))
         {
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);

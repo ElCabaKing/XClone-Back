@@ -11,7 +11,7 @@ namespace Infrastructure.Repositories;
 
 public class UserRepository(XDbContext context) : IUserRepository
 {
-    public async Task<User> CreateUserAsync(User user)
+    public async Task<User?> CreateUserAsync(User user)
     {
         var userEntity = UserMapper.MapToEntity(user);
         await context.Users.AddAsync(userEntity);

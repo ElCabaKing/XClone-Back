@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Shared.Constants;
+using Mailjet.Client;
 
 namespace Infrastructure;
 
@@ -28,15 +30,31 @@ public static class DependencyInjection
 
         //External services configuration
         services.AddSingleton(ConfigureCloudinary(configuration));
+
+        services.AddSingleton(ConfigureMailjet(configuration));
+
         services.AddScoped<IPasswordService, PasswordService>();
+
+        services.AddScoped<IEmailService, EmailService>();
+
         services.AddScoped<ICloudStorage, CloudStorageService>();
         ConfigureDatabase(services, configuration);
+
         services.Configure<JwtSettings>(
 configuration.GetSection("Jwt"));
         ConfigureAuthentication(services, configuration);
         services.AddScoped<ITokenService, TokenService>();
 
+
+
         return services;
+    }
+
+    public static MailjetClient ConfigureMailjet(IConfiguration configuration)
+    {
+        var apiKey = configuration[ConfigurationConstants.MailjetApiKey] ?? throw new BadConfigurationException("Mailjet API key is not configured.");
+        var apiSecret = configuration[ConfigurationConstants.MailjetApiSecret] ?? throw new BadConfigurationException("Mailjet API secret is not configured.");
+        return new MailjetClient(apiKey, apiSecret);
     }
 
     public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
@@ -98,6 +116,6 @@ configuration[ConfigurationConstants.CloudinaryApiSecret]));
     private static JwtSettings GetJwtSettings(IConfiguration configuration)
     {
         return configuration.GetSection("Jwt").Get<JwtSettings>()
-            ?? throw new BadConfigurationException(ServicesResponseConstants.JWT_CONFIG_ERROR);
+            ?? throw new BadConfigurationException(ResponseConstants.JWT_CONFIG_ERROR);
     }
 }
