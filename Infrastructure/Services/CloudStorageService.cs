@@ -4,6 +4,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Domain.Exceptions;
 using Infrastructure.Constants;
+using Shared.Constants;
 
 namespace Infrastructure.Services;
 
@@ -29,7 +30,7 @@ public class CloudStorageService(Cloudinary cloudinary) : ICloudStorage
         }
         else
         {
-            throw new ServiceErrorException(ServicesResponseConstants.CLOUD_ERROR(uploadResult.Error.Message));
+            throw new ServiceErrorException(ResponseConstants.CLOUD_ERROR(uploadResult.Error.Message));
         }
     }
 }

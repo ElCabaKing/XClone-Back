@@ -62,7 +62,7 @@ public class UpdateUserTest
         var cloudStorageMock = new Mock<ICloudStorage>();
 
         userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<Guid>()))
-            .ReturnsAsync((Domain.Entities.User)null);
+            .ReturnsAsync((Domain.Entities.User?)null);
 
         var handler = new UpdateUserHandler(userRepositoryMock.Object);
         var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);

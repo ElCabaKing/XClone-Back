@@ -3,6 +3,7 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
+using Shared.Constants;
 
 namespace Application.Modules.Auth.Login;
 
@@ -20,7 +21,7 @@ ITokenRepository tokenRepository)
 
         if (user == null || !passwordService.VerifyPassword(command.Password, user.PasswordHash))
         {
-            throw new UnauthorizedAccessException("Invalid username or password.");
+            throw new UnauthorizedAccessException(ResponseConstants.INVALID_CREDENTIALS);
         }
 
         var token = tokenService.CreateToken(user.Id);

@@ -59,7 +59,7 @@ public class LoginTest
         var tokenRepositoryMock = new Mock<ITokenRepository>();
 
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
-            .ReturnsAsync((Domain.Entities.User)null);
+            .ReturnsAsync((Domain.Entities.User?)null);
 
 
         var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
@@ -138,14 +138,22 @@ public class LoginTest
     [Fact]
     public async Task Login_RepositoryFails_ThrowsServiceErrorException()
     {
-        // Arrange
+        // 
+        var user = new Domain.Entities.User
+        {
+            Id = Guid.NewGuid(),
+            Username = "david",
+            Email = "david@test.com",
+            PasswordHash = "hashed_password"
+        };
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var tokenServiceMock = new Mock<ITokenService>();
         var tokenRepositoryMock = new Mock<ITokenRepository>();
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
-            .ThrowsAsync(new ServiceErrorException("User not found"));
-
+            .ReturnsAsync(user);
+        passwordServiceMock.Setup(service => service.VerifyPassword(It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(true);
         tokenRepositoryMock.Setup(repo => repo.StoreRefreshTokenAsync(It.IsAny<Token>()))
             .ThrowsAsync(new ServiceErrorException("Token creation failed"));
 
