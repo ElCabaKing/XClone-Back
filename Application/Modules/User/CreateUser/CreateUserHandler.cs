@@ -22,7 +22,8 @@ ICloudStorage cloudStorage)
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);
         }
 
-        var HashedPassword = passwordService.HashPassword(command.Password);
+        var HashedPassword = passwordService.HashPassword(command.Password) ??
+            throw new ServiceErrorException("Error hashing password.");
 
         await using var profilePictureStream = command.ProfilePicture;
 
@@ -35,13 +36,14 @@ ICloudStorage cloudStorage)
             profilePictureUrl = await cloudStorage.UploadFileAsync(
                stream,
                command.ProfilePictureFileName!
-           );
+           ) ?? throw new ServiceErrorException("Error uploading profile picture.");
         }
 
         var response = await userRepository.CreateUserAsync(MapToDomain(
             command, HashedPassword,
             command.ProfilePicture != null ?
-          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL));
+          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL))
+            ?? throw new ServiceErrorException("Error creating user.");
 
         return ResponseHelper.Create(new CreateUserResponse(
             response.Id,

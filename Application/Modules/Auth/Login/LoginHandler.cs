@@ -1,6 +1,7 @@
 
 
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Modules.Auth.Login;
@@ -24,7 +25,7 @@ ITokenRepository tokenRepository)
 
         var token = tokenService.CreateToken(user.Id);
         var refreshToken = tokenService.CreateRefreshToken();
-        await tokenRepository.StoreRefreshTokenAsync(new Domain.Entities.Token
+        await tokenRepository.StoreRefreshTokenAsync(new Token
         {
             UserId = user.Id,
             RefreshToken = refreshToken,

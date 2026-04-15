@@ -41,8 +41,8 @@ public class UpdateUserTest
                 LastName = "Name"
             });
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(userId, "New", "Name", "test@example.com", null);
 
         // Act
         var result = await handler.Handle(command);
@@ -64,8 +64,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync((Domain.Entities.User)null);
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(async () => await handler.Handle(command));
@@ -95,8 +95,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), "newemail@example.com"))
             .ReturnsAsync(true);
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name", "newemail@example.com");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(userId, "New", "Name", "newemail@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<AlreadyExistsException>(async () => await handler.Handle(command));
@@ -122,8 +122,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(userId))
             .ReturnsAsync(existingUser);
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name", "invalid-email");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(userId, "New", "Name", "invalid-email", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<BadRequestException>(async () => await handler.Handle(command));
@@ -155,8 +155,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.UpdateUserAsync(It.IsAny<Domain.Entities.User>()))
             .ThrowsAsync(new Exception("Database connection failed"));
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(userId, "New", "Name", "test@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));
@@ -167,11 +167,10 @@ public class UpdateUserTest
     {
         // Arrange
         var handler = new UpdateUserHandler(
-            new Mock<IUserRepository>().Object,
-            new Mock<ICloudStorage>().Object
+            new Mock<IUserRepository>().Object
         );
         var longName = new string('a', 101); // Más de 100 caracteres
-        var command = new UpdateUserCommand(Guid.NewGuid(), longName, "Last");
+        var command = new UpdateUserCommand(Guid.NewGuid(), longName, "Last", "test@example.com", null );
 
         // Act & Assert
         await Assert.ThrowsAsync<BadRequestException>(async () => await handler.Handle(command));
@@ -187,8 +186,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));
@@ -217,8 +216,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var handler = new UpdateUserHandler(userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name", "newemail@example.com");
+        var handler = new UpdateUserHandler(userRepositoryMock.Object);
+        var command = new UpdateUserCommand(userId, "New", "Name", "newemail@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));

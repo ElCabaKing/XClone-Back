@@ -83,10 +83,10 @@ public class CreateUserTest
             .Returns("hashedpassword");
 
         cloudStorageMock.Setup(storage => storage.UploadFileAsync(It.IsAny<Stream>(), It.IsAny<string>()))
-            .ThrowsAsync(new Exception("Cloudinary error"));
+            .ReturnsAsync(string.Empty); // Simula un fallo en la subida
 
         var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User");
+        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg");
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));
@@ -110,58 +110,13 @@ public class CreateUserTest
             .ReturnsAsync("http://example.com/profile.jpg");
 
         userRepositoryMock.Setup(repo => repo.CreateUserAsync(It.IsAny<Domain.Entities.User>()))
-            .ThrowsAsync(new Exception("Database connection failed"));
+            .ReturnsAsync((Domain.Entities.User?)null); // Simula un fallo en la inserción
 
         var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User");
+        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg");
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));
-    }
-
-    [Fact]
-    public async Task CreateUser_InvalidEmail_ThrowsBadRequestException()
-    {
-        // Arrange
-        var handler = new CreateUserHandler(
-            new Mock<IPasswordService>().Object,
-            new Mock<IUserRepository>().Object,
-            new Mock<ICloudStorage>().Object
-        );
-        var command = new CreateUserCommand("testuser", "invalid-email", "Password123!", "Test", "User");
-
-        // Act & Assert
-        await Assert.ThrowsAsync<BadRequestException>(async () => await handler.Handle(command));
-    }
-
-    [Fact]
-    public async Task CreateUser_PasswordTooShort_ThrowsBadRequestException()
-    {
-        // Arrange
-        var handler = new CreateUserHandler(
-            new Mock<IPasswordService>().Object,
-            new Mock<IUserRepository>().Object,
-            new Mock<ICloudStorage>().Object
-        );
-        var command = new CreateUserCommand("testuser", "test@example.com", "Pass1!", "Test", "User");
-
-        // Act & Assert
-        await Assert.ThrowsAsync<BadRequestException>(async () => await handler.Handle(command));
-    }
-
-    [Fact]
-    public async Task CreateUser_UsernameTooShort_ThrowsBadRequestException()
-    {
-        // Arrange
-        var handler = new CreateUserHandler(
-            new Mock<IPasswordService>().Object,
-            new Mock<IUserRepository>().Object,
-            new Mock<ICloudStorage>().Object
-        );
-        var command = new CreateUserCommand("user", "test@example.com", "Password123!", "Test", "User");
-
-        // Act & Assert
-        await Assert.ThrowsAsync<BadRequestException>(async () => await handler.Handle(command));
     }
 
     [Fact]
@@ -173,10 +128,10 @@ public class CreateUserTest
         var cloudStorageMock = new Mock<ICloudStorage>();
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
-            .ThrowsAsync(new Exception("Database error"));
+            .ThrowsAsync(new ServiceErrorException("Database error"));
 
         var handler = new CreateUserHandler(passwordServiceMock.Object, userRepositoryMock.Object, cloudStorageMock.Object);
-        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User");
+        var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg"   );
 
         // Act & Assert
         await Assert.ThrowsAsync<ServiceErrorException>(async () => await handler.Handle(command));

@@ -19,6 +19,13 @@ public class UserRepository(XDbContext context) : IUserRepository
         return user;
     }
 
+    public async Task<User?> GetUserByIdAsync(Guid id)
+    {
+        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
+        return UserMapper.MapToDomain(userEntity);
+    }
+
     public async Task<User?> GetByUsernameorEmailAsync(string credential)
     {
         var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == credential || u.Email == credential);
