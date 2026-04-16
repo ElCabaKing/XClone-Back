@@ -14,7 +14,6 @@ public class TokenRepository (XDbContext context): ITokenRepository
         var tokenEntity = context.Tokens.FirstOrDefault(t => t.UserId == userId);
         if (tokenEntity != null)        {
             context.Tokens.Remove(tokenEntity);
-            await context.SaveChangesAsync();
         }
     }
 
@@ -28,7 +27,5 @@ public class TokenRepository (XDbContext context): ITokenRepository
     {
         var tokenEntity = TokenMapper.MapToEntity(token);
         await context.Tokens.AddAsync(tokenEntity);
-        await context.SaveChangesAsync();
-        
     }
 }

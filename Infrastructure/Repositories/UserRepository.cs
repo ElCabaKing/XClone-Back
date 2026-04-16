@@ -54,7 +54,6 @@ public class UserRepository(XDbContext context) : IUserRepository
             userEntity.ProfilePictureUrl = user.ProfilePictureUrl;
 
         context.Users.Update(userEntity);
-        await context.SaveChangesAsync();
         return UserMapper.MapToDomain(userEntity);
     }
 }

@@ -10,7 +10,7 @@ namespace Application.Modules.User.CreateUser;
 public class CreateUserHandler(
     IEmailService emailService,
 IPasswordService passwordService,
-IUserRepository userRepository,
+IUOW uow,
 ICloudStorage cloudStorage)
 {
 
@@ -20,7 +20,7 @@ ICloudStorage cloudStorage)
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
         await emailService.SendEmailAsync(command.Email, "Welcome to XClone!", "Thank you for registering at XClone. We're excited to have you on board!");
-        if (await userRepository.UsernameOrEmailExists(command.Username, command.Email))
+        if (await uow.UserRepository.UsernameOrEmailExists(command.Username, command.Email))
         {
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);
         }
@@ -42,7 +42,7 @@ ICloudStorage cloudStorage)
            );
         }
 
-        var response = await userRepository.CreateUserAsync(MapToDomain(
+        var response = await uow.UserRepository.CreateUserAsync(MapToDomain(
             command, HashedPassword,
             command.ProfilePicture != null ?
           profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL))

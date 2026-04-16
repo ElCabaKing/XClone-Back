@@ -15,8 +15,10 @@ public class LoginTest
         // Arrange
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
+        var uowMock = new Mock<IUOW>();
         var tokenServiceMock = new Mock<ITokenService>();
         var tokenRepositoryMock = new Mock<ITokenRepository>();
+
 
         var user = new Domain.Entities.User
         {
@@ -38,7 +40,10 @@ public class LoginTest
         tokenRepositoryMock.Setup(repo => repo.StoreRefreshTokenAsync(It.IsAny<Token>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
+        uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
+        uowMock.Setup(uow => uow.TokenRepository).Returns(tokenRepositoryMock.Object);
+
+        var handler = new LoginHandler(tokenServiceMock.Object, uowMock.Object, passwordServiceMock.Object  );
         var command = new LoginCommand("testuser", "Password123!");
 
         // Act
@@ -57,12 +62,15 @@ public class LoginTest
         var passwordServiceMock = new Mock<IPasswordService>();
         var tokenServiceMock = new Mock<ITokenService>();
         var tokenRepositoryMock = new Mock<ITokenRepository>();
+        var uowMock = new Mock<IUOW>();
 
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
             .ReturnsAsync((Domain.Entities.User?)null);
 
+        uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
+        uowMock.Setup(uow => uow.TokenRepository).Returns(tokenRepositoryMock.Object);
 
-        var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
+        var handler = new LoginHandler(tokenServiceMock.Object, uowMock.Object, passwordServiceMock.Object      );
         var command = new LoginCommand("nonexistent", "Password123!");
 
         // Act & Assert
@@ -73,6 +81,7 @@ public class LoginTest
     public async Task Login_InvalidPassword_ThrowsUnauthorizedAccessException()
     {
         // Arrange
+        var uowMock = new Mock<IUOW>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var tokenServiceMock = new Mock<ITokenService>();
@@ -85,6 +94,9 @@ public class LoginTest
             Email = "test@example.com",
             PasswordHash = "hashedpassword"
         };
+
+        uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
+        uowMock.Setup(uow => uow.TokenRepository).Returns(tokenRepositoryMock.Object);
 
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(user);
@@ -95,7 +107,7 @@ public class LoginTest
         tokenRepositoryMock.Setup(repo => repo.StoreRefreshTokenAsync(It.IsAny<Token>()))
             .Returns(Task.CompletedTask);
 
-        var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
+        var handler = new LoginHandler(tokenServiceMock.Object, uowMock.Object, passwordServiceMock.Object  );
         var command = new LoginCommand("testuser", "WrongPassword123!");
 
         // Act & Assert
@@ -106,6 +118,7 @@ public class LoginTest
     public async Task Login_TokenServiceFails_ThrowsServiceErrorException()
     {
         // Arrange
+        var uowMock = new Mock<IUOW>();
         var userRepositoryMock = new Mock<IUserRepository>();
         var passwordServiceMock = new Mock<IPasswordService>();
         var tokenServiceMock = new Mock<ITokenService>();
@@ -118,6 +131,8 @@ public class LoginTest
             Email = "test@example.com",
             PasswordHash = "hashedpassword"
         };
+        uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
+        uowMock.Setup(uow => uow.TokenRepository).Returns(tokenRepositoryMock.Object);
 
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(user);
@@ -128,7 +143,7 @@ public class LoginTest
         tokenServiceMock.Setup(service => service.CreateToken(It.IsAny<Guid>()))
             .Throws(new ServiceErrorException("Token creation failed"));
 
-        var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
+        var handler = new LoginHandler(tokenServiceMock.Object, uowMock.Object, passwordServiceMock.Object  );
         var command = new LoginCommand("testuser", "Password123!");
 
         // Act & Assert
@@ -150,6 +165,10 @@ public class LoginTest
         var passwordServiceMock = new Mock<IPasswordService>();
         var tokenServiceMock = new Mock<ITokenService>();
         var tokenRepositoryMock = new Mock<ITokenRepository>();
+        var uowMock = new Mock<IUOW>();
+
+        uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
+        uowMock.Setup(uow => uow.TokenRepository).Returns(tokenRepositoryMock.Object);
         userRepositoryMock.Setup(repo => repo.GetByUsernameorEmailAsync(It.IsAny<string>()))
             .ReturnsAsync(user);
         passwordServiceMock.Setup(service => service.VerifyPassword(It.IsAny<string>(), It.IsAny<string>()))
@@ -157,7 +176,7 @@ public class LoginTest
         tokenRepositoryMock.Setup(repo => repo.StoreRefreshTokenAsync(It.IsAny<Token>()))
             .ThrowsAsync(new ServiceErrorException("Token creation failed"));
 
-        var handler = new LoginHandler(tokenServiceMock.Object, userRepositoryMock.Object, passwordServiceMock.Object, tokenRepositoryMock.Object);
+        var handler = new LoginHandler(tokenServiceMock.Object, uowMock.Object, passwordServiceMock.Object  );
         var command = new LoginCommand("testuser", "Password123!");
 
         // Act & Assert

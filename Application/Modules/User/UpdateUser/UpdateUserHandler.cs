@@ -4,11 +4,13 @@ using Shared.Generics;
 using Domain.Entities;
 using UserDomain = Domain.Entities.User;
 using Shared.Helpers;
+using Domain.Exceptions;
+using Shared.Constants;
 
 namespace Application.Modules.User.UpdateUser;
 
 public class UpdateUserHandler(
-    IUserRepository userRepository
+    IUOW uow
 )
 {
     /// <summary>
@@ -16,7 +18,9 @@ public class UpdateUserHandler(
     /// </summary>
     public async Task<GenericResponse<UpdateUserResponse>> Handle(UpdateUserCommand command)
     {
-        var response = await userRepository.UpdateUserAsync(MapToDomain(command));
+        var existingUser = await uow.UserRepository.GetUserByIdAsync(command.UserId) ??
+            throw new NotFoundException(ResponseConstants.NOT_FOUND);
+        var response = await uow.UserRepository.UpdateUserAsync(MapToDomain(command));
         return ResponseHelper.Create(new UpdateUserResponse(
             response.Id,
             response.Username,

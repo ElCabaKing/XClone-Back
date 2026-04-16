@@ -21,7 +21,7 @@ public class EmailService(MailjetClient mailjetClient) : IEmailService
                 {
                     "From", new JObject
                     {
-                        { "Email", "no-reply@tuapp.com" },
+                        { "Email", "davi.cabanilla@gmail.com" },
                         { "Name", "Tu App" }
                     }
                 },

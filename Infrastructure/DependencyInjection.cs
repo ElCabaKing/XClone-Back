@@ -15,6 +15,7 @@ using Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Shared.Constants;
 using Mailjet.Client;
+using Infrastructure.Unity;
 
 namespace Infrastructure;
 
@@ -24,6 +25,7 @@ public static class DependencyInjection
     IConfiguration configuration)
     {
         //Repositories configuration
+        services.AddScoped<IUOW, UOW>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
 
