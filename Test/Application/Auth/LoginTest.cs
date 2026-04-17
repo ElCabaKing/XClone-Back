@@ -9,6 +9,7 @@ namespace Test.Application.Auth;
 
 public class LoginTest
 {
+    
     [Fact]
     public async Task Login_Success()
     {

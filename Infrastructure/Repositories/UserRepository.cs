@@ -2,7 +2,6 @@ using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Infrastructure.Contexts;
-using Infrastructure.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Shared.Constants;
 
@@ -14,16 +13,14 @@ public class UserRepository(XDbContext context)
 {
     public async Task<bool> UsernameOrEmailExists(string username, string email)
     {
-        var user = await _context.Users
-            .FirstOrDefaultAsync(u => u.Username == username || u.Email == email);
-
-        return user != null;
+        return await _context.Users
+            .FirstOrDefaultAsync(
+                u => u.Username == username || 
+                u.Email == email) != null;
     }
 
     public async Task<User?> GetByIdAsync(Guid id)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id) ??
-            throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MapToDomain(user);
+        return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
     }
 }

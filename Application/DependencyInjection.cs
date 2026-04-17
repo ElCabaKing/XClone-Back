@@ -1,8 +1,9 @@
 
 using Microsoft.Extensions.DependencyInjection;
-using Application.Modules.User.CreateUser;
 using Application.Modules.Auth.Login;
-using Application.Modules.User.UpdateUser;
+using Application.Modules.Users.CreateUser;
+using Application.Modules.Users.UpdateUser;
+
 
 namespace Application;
 

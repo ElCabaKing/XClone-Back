@@ -1,4 +1,4 @@
-namespace Application.Modules.User.CreateUser;
+namespace Application.Modules.Users.CreateUser;
 
 public class CreateUserResponse(
     Guid id, 

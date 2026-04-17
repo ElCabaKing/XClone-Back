@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistence.DbContext;
+namespace Infrastructure.Contexts;
 
 public partial class XDbContext : DbContext
 {
@@ -60,11 +60,11 @@ public partial class XDbContext : DbContext
     {
         modelBuilder.Entity<BanList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83FD7A60576");
+            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83FCE791BE6");
 
             entity.ToTable("ban_list");
 
-            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F63B7A754C").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F6F2083C3F").IsUnique();
 
             entity.HasIndex(e => e.BannedBy, "idx_ban_list_banned_by");
 
@@ -91,7 +91,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<ChatRoom>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83F44D7B8AB");
+            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83FE4EE8765");
 
             entity.ToTable("chat_room");
 
@@ -113,7 +113,7 @@ public partial class XDbContext : DbContext
                         .HasConstraintName("FK__chat_part__chat___6D2D2E85"),
                     j =>
                     {
-                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE867B7F84F87");
+                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE867E312EC04");
                         j.ToTable("chat_participants");
                         j.HasIndex(new[] { "UserId" }, "idx_chat_participants_user_id");
                         j.IndexerProperty<Guid>("ChatId").HasColumnName("chat_id");
@@ -123,11 +123,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<CommentLikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FE021C07B");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F07833D21");
 
             entity.ToTable("comment_like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C76066F63B70CA").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C76066C01B9283").IsUnique();
 
             entity.HasIndex(e => e.CommentId, "idx_comment_like_list_comment_id");
 
@@ -154,7 +154,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<CommentList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F1AF63B8E");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FA8847B68");
 
             entity.ToTable("comment_list");
 
@@ -197,7 +197,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<EmailTemplate>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__email_te__3213E83FD4603584");
+            entity.HasKey(e => e.Id).HasName("PK__email_te__3213E83FE1C3C4BA");
 
             entity.ToTable("email_templates");
 
@@ -221,11 +221,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<FollowList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83F6D47CB1D");
+            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83F5FFA02B7");
 
             entity.ToTable("follow_list");
 
-            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A6BE7C21BB").IsUnique();
+            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A63041A331").IsUnique();
 
             entity.HasIndex(e => e.FollowerId, "idx_follow_list_follower_id");
 
@@ -252,11 +252,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Hashtag>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83F51FD9007");
+            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83F67C36049");
 
             entity.ToTable("hashtags");
 
-            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1BC2D3DED3").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1BAE4A8C20").IsUnique();
 
             entity.HasIndex(e => e.Name, "idx_hashtags_name");
 
@@ -273,11 +273,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<HashtagPost>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83FF4283F7E");
+            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83F2BC017BF");
 
             entity.ToTable("hashtag_post");
 
-            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9B258DA62C").IsUnique();
+            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9B8349F8DB").IsUnique();
 
             entity.HasIndex(e => e.HashtagId, "idx_hashtag_post_hashtag_id");
 
@@ -303,11 +303,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<LikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83F2F2D63C3");
+            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83F78A8EE3A");
 
             entity.ToTable("like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F7877B14918").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F780A28F946").IsUnique();
 
             entity.HasIndex(e => e.PostId, "idx_like_list_post_id");
 
@@ -334,7 +334,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83F90DCC1BB");
+            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83F693F8C12");
 
             entity.ToTable("messages");
 
@@ -370,11 +370,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<MuteList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83FF893F66D");
+            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83FA1508B5A");
 
             entity.ToTable("mute_list");
 
-            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08CE89A84C4").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08C062D58B4").IsUnique();
 
             entity.HasIndex(e => e.MutedBy, "idx_mute_list_muted_by");
 
@@ -401,7 +401,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83FF44AD3FE");
+            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83F7CA06A2D");
 
             entity.ToTable("notifications");
 
@@ -438,7 +438,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__post__3213E83FA145B927");
+            entity.HasKey(e => e.Id).HasName("PK__post__3213E83F31D77DF6");
 
             entity.ToTable("post");
 
@@ -490,7 +490,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Survey>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83FCA52C7D8");
+            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83F0195F16C");
 
             entity.ToTable("survey");
 
@@ -513,11 +513,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Token>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__token__3213E83F201EB67E");
+            entity.HasKey(e => e.Id).HasName("PK__token__3213E83F588F41F3");
 
             entity.ToTable("token");
 
-            entity.HasIndex(e => e.RefreshToken, "UQ__token__7FB69BAD0292D260").IsUnique();
+            entity.HasIndex(e => e.RefreshToken, "UQ__token__7FB69BAD3395612B").IsUnique();
 
             entity.HasIndex(e => e.UserId, "idx_token_user_id");
 
@@ -541,13 +541,13 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user__3213E83F4AF7D273");
+            entity.HasKey(e => e.Id).HasName("PK__user__3213E83F9068EBF8");
 
             entity.ToTable("user");
 
-            entity.HasIndex(e => e.Email, "UQ__user__AB6E6164E5CE9BF2").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__user__AB6E6164BD34F214").IsUnique();
 
-            entity.HasIndex(e => e.Username, "UQ__user__F3DBC5726F6542AF").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ__user__F3DBC572A364634F").IsUnique();
 
             entity.HasIndex(e => e.CreatedAt, "idx_user_created_at");
 
@@ -588,22 +588,20 @@ public partial class XDbContext : DbContext
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_Role");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Users)
                 .HasForeignKey(d => d.StatusId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_User_Status");
         });
 
         modelBuilder.Entity<UserRole>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83F4320F41B");
+            entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83FFDD2DF07");
 
             entity.ToTable("user_role");
 
-            entity.HasIndex(e => e.Name, "UQ__user_rol__72E12F1BBEB777B2").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__user_rol__72E12F1BEB2A9D74").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)
@@ -616,11 +614,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<UserStatus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83F8FD3B71B");
+            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83F833C1BAC");
 
             entity.ToTable("user_status");
 
-            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1BD8875378").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1B0D025C4C").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)

@@ -32,7 +32,7 @@ IPasswordService passwordService)
         {
             UserId = user.Id,
             RefreshToken = refreshToken,
-            ExpiryDate = DateTime.UtcNow.AddDays(30)
+            ExpiresAt = DateTime.UtcNow.AddDays(30)
         });
 
         return new LoginResponse

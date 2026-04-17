@@ -3,7 +3,6 @@
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Contexts;
-using Infrastructure.Mappers;
 
 namespace Infrastructure.Repositories;
 
@@ -26,7 +25,6 @@ public class TokenRepository (XDbContext context)
 
     public async Task StoreRefreshTokenAsync(Token token)
     {
-        var tokenEntity = TokenMapper.MapToEntity(token);
-        await _context.Tokens.AddAsync(tokenEntity);
+        await _context.Tokens.AddAsync(token);
     }
 }

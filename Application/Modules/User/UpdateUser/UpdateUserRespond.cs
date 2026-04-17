@@ -1,4 +1,4 @@
-namespace Application.Modules.User.UpdateUser;
+namespace Application.Modules.Users.UpdateUser;
 
 public class UpdateUserResponse(
     Guid id, 

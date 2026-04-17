@@ -1,11 +1,12 @@
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Shared.Constants;
 using Shared.Generics;
 using Shared.Helpers;
-using UserDomain = Domain.Entities.User;
-namespace Application.Modules.User.CreateUser;
+
+namespace Application.Modules.Users.CreateUser;
 
 public class CreateUserHandler(
     IEmailService emailService,
@@ -27,7 +28,6 @@ ICloudStorage cloudStorage)
         var HashedPassword = passwordService.HashPassword(command.Password) ??
             throw new ServiceErrorException(ResponseConstants.HASHING_ERROR);
 
-        await using var profilePictureStream = command.ProfilePicture;
 
         string? profilePictureUrl = null;
 
@@ -40,18 +40,30 @@ ICloudStorage cloudStorage)
                command.ProfilePictureFileName!
            );
         }
-
-        var response = await uow.UserRepository.Create(MapToDomain(
-            command, HashedPassword,
-            command.ProfilePicture != null ?
-          profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL))
+        
+        User newUser = new()
+        {
+            Id = Guid.NewGuid(),
+            Username = command.Username,
+            Email = command.Email,
+            PasswordHash = HashedPassword,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            ProfilePictureUrl = profilePictureUrl ?? MediaConstants.DEFAULT_PROFILE_PICTURE_URL
+        };
+        var response = await uow.UserRepository.Create(newUser)
             ?? throw new ServiceErrorException(ResponseConstants.USER_CREATION_ERROR);
 
+        await uow.SaveChangesAsync();
+
+        EmailTemplate email = await  uow.EmailTemplateRepository.FirstOrDefaultAsync(email => email.Name == EmailTemplateConstants.WELCOME_EMAIL_TEMPLATE) ??
+           throw new NotFoundException(ResponseConstants.EMAIL_TEMPLATE_NOT_FOUND);
+
         await emailService.SendEmailAsync(
-            response.Email,
-            "Welcome to XClone!",
-            $"Hi {response.FirstName},\n\nThank you for registering at XClone! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team.\n\nBest regards,\nThe XClone Team"     
-            
+           response.Email,
+           email.Subject,
+           email.Body.
+           Replace("{{first_name}}", response.FirstName)
         );
 
         return ResponseHelper.Create(new CreateUserResponse(
@@ -66,18 +78,4 @@ ICloudStorage cloudStorage)
 
     }
 
-    private static UserDomain MapToDomain(CreateUserCommand command, string passwordHash, string? profilePictureUrl)
-    {
-        return new UserDomain
-        {
-            Id = Guid.NewGuid(),
-            Username = command.Username,
-            Email = command.Email,
-            PasswordHash = passwordHash,
-            FirstName = command.FirstName,
-            LastName = command.LastName,
-            ProfilePictureUrl = profilePictureUrl ?? null,
-            Status = Domain.Enums.UserStatusEnum.Active
-        };
-    }
 }

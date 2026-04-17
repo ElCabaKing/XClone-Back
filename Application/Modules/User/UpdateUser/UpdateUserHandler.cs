@@ -7,7 +7,8 @@ using Shared.Helpers;
 using Domain.Exceptions;
 using Shared.Constants;
 
-namespace Application.Modules.User.UpdateUser;
+
+namespace Application.Modules.Users.UpdateUser;
 
 public class UpdateUserHandler(
     IUOW uow

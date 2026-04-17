@@ -1,5 +1,6 @@
-using Application.Modules.User.CreateUser;
-using Application.Modules.User.UpdateUser;
+
+using Application.Modules.Users.CreateUser;
+using Application.Modules.Users.UpdateUser;
 using AppWeb.Requests.User;
 using Microsoft.AspNetCore.Mvc;
 

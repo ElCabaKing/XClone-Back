@@ -15,9 +15,9 @@ public partial class User
 
     public DateTime CreatedAt { get; set; }
 
-    public byte RoleId { get; set; }
+    public byte? RoleId { get; set; }
 
-    public byte StatusId { get; set; }
+    public byte? StatusId { get; set; }
 
     public string FirstName { get; set; } = null!;
 
@@ -49,9 +49,9 @@ public partial class User
 
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
 
-    public virtual UserRole Role { get; set; } = null!;
+    public virtual UserRole? Role { get; set; }
 
-    public virtual UserStatus Status { get; set; } = null!;
+    public virtual UserStatus? Status { get; set; }
 
     public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
 
