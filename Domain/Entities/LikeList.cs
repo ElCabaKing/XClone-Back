@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 namespace Domain.Entities;
 
-public partial class Token
+public partial class LikeList
 {
     public Guid Id { get; set; }
 
     public Guid UserId { get; set; }
 
-    public string RefreshToken { get; set; } = null!;
+    public Guid PostId { get; set; }
 
-    public DateTime ExpiresAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime CreatedAt { get; set; }
+    public virtual Post Post { get; set; } = null!;
 
     public virtual User User { get; set; } = null!;
 }
