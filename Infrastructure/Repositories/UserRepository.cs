@@ -9,15 +9,21 @@ using Shared.Constants;
 
 namespace Infrastructure.Repositories;
 
-public class UserRepository(XDbContext context) : GenericRepository<User>(context), IUserRepository
+public class UserRepository(XDbContext context) 
+    : GenericRepository<User>(context), IUserRepository
 {
-    public Task<User?> GetByUsernameorEmailAsync(string credential)
+    public async Task<bool> UsernameOrEmailExists(string username, string email)
     {
-        throw new NotImplementedException();
+        var user = await _context.Users
+            .FirstOrDefaultAsync(u => u.Username == username || u.Email == email);
+
+        return user != null;
     }
 
-    public Task<bool> UsernameOrEmailExists(string username, string email)
+    public async Task<User?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id) ??
+            throw new NotFoundException(ResponseConstants.NOT_FOUND);
+        return UserMapper.MapToDomain(user);
     }
 }

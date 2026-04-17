@@ -7,25 +7,26 @@ using Infrastructure.Mappers;
 
 namespace Infrastructure.Repositories;
 
-public class TokenRepository (XDbContext context): ITokenRepository
+public class TokenRepository (XDbContext context)
+    : GenericRepository<Token>(context), ITokenRepository
 {
     public async Task DeleteRefreshTokenAsync(Guid userId)
     {
-        var tokenEntity = context.Tokens.FirstOrDefault(t => t.UserId == userId);
+        var tokenEntity = _context.Tokens.FirstOrDefault(t => t.UserId == userId);
         if (tokenEntity != null)        {
-            context.Tokens.Remove(tokenEntity);
+            _context.Tokens.Remove(tokenEntity);
         }
     }
 
     public async Task<string?> GetRefreshTokenAsync(Guid userId)
     {
-        var tokenEntity = context.Tokens.FirstOrDefault(t => t.UserId == userId);
+        var tokenEntity = _context.Tokens.FirstOrDefault(t => t.UserId == userId);
         return tokenEntity?.RefreshToken;
     }
 
     public async Task StoreRefreshTokenAsync(Token token)
     {
         var tokenEntity = TokenMapper.MapToEntity(token);
-        await context.Tokens.AddAsync(tokenEntity);
+        await _context.Tokens.AddAsync(tokenEntity);
     }
 }

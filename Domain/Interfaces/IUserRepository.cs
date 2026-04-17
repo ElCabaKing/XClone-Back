@@ -4,6 +4,6 @@ namespace Domain.Interfaces;
 
 public interface IUserRepository : IGenericRepository<User>
 {
-    public Task<User?> GetByUsernameorEmailAsync(string credential);
     public Task<bool> UsernameOrEmailExists(string username, string email);
+    public Task<User?> GetByIdAsync(Guid id);
 }

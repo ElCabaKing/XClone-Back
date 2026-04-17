@@ -18,9 +18,10 @@ public class UpdateUserHandler(
     /// </summary>
     public async Task<GenericResponse<UpdateUserResponse>> Handle(UpdateUserCommand command)
     {
-        var existingUser = await uow.UserRepository.GetUserByIdAsync(command.UserId) ??
+        var existingUser = await uow.UserRepository.GetByIdAsync(command.UserId) ??
             throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        var response = await uow.UserRepository.UpdateUserAsync(MapToDomain(command));
+        var response = await uow.UserRepository.Update(MapToDomain(command));
+        
         return ResponseHelper.Create(new UpdateUserResponse(
             response.Id,
             response.Username,

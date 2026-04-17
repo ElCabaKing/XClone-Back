@@ -41,7 +41,7 @@ ICloudStorage cloudStorage)
            );
         }
 
-        var response = await uow.UserRepository.CreateUserAsync(MapToDomain(
+        var response = await uow.UserRepository.Create(MapToDomain(
             command, HashedPassword,
             command.ProfilePicture != null ?
           profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL))
@@ -49,8 +49,10 @@ ICloudStorage cloudStorage)
 
         await emailService.SendEmailAsync(
             response.Email,
+            "Welcome to XClone!",
+            $"Hi {response.FirstName},\n\nThank you for registering at XClone! We're excited to have you on board. If you have any questions or need assistance, feel free to reach out to our support team.\n\nBest regards,\nThe XClone Team"     
             
-        )
+        );
 
         return ResponseHelper.Create(new CreateUserResponse(
             response.Id,
