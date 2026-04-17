@@ -37,7 +37,7 @@ public static class DependencyInjection
 
         services.AddScoped<IPasswordService, PasswordService>();
 
-        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailService, EmailServiceMailTrap>();
 
         services.AddScoped<ICloudStorage, CloudStorageService>();
         ConfigureDatabase(services, configuration);
