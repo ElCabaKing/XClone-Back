@@ -9,51 +9,15 @@ using Shared.Constants;
 
 namespace Infrastructure.Repositories;
 
-public class UserRepository(XDbContext context) : IUserRepository
+public class UserRepository(XDbContext context) : GenericRepository<User>(context), IUserRepository
 {
-    public async Task<User?> CreateUserAsync(User user)
+    public Task<User?> GetByUsernameorEmailAsync(string credential)
     {
-        var userEntity = UserMapper.MapToEntity(user);
-        await context.Users.AddAsync(userEntity);
-        await context.SaveChangesAsync();
-        return user;
+        throw new NotImplementedException();
     }
 
-    public async Task<User?> GetUserByIdAsync(Guid id)
+    public Task<bool> UsernameOrEmailExists(string username, string email)
     {
-        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MapToDomain(userEntity);
-    }
-
-    public async Task<User?> GetByUsernameorEmailAsync(string credential)
-    {
-        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Username == credential || u.Email == credential);
-        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-        return UserMapper.MapToDomain(userEntity);
-    }
-
-    public async Task<bool> UsernameOrEmailExists(string username, string email)
-    {
-        var exists = await context.Users.AnyAsync(u => u.Username == username || u.Email == email);
-        return exists;
-    }
-
-    public async Task<User> UpdateUserAsync(User user)
-    {
-        var userEntity = await context.Users.FirstOrDefaultAsync(u => u.Id == user.Id);
-
-        Console.WriteLine($"Updating user with ID: {user.Id}");
-        if (userEntity == null) throw new NotFoundException(ResponseConstants.NOT_FOUND);
-
-        userEntity.FirstName = user.FirstName ?? userEntity.FirstName;
-        userEntity.LastName = user.LastName ?? userEntity.LastName;
-        userEntity.Email = user.Email ?? userEntity.Email;
-        userEntity.Username = user.Username ?? userEntity.Username;
-        if (user.ProfilePictureUrl != null)
-            userEntity.ProfilePictureUrl = user.ProfilePictureUrl;
-
-        context.Users.Update(userEntity);
-        return UserMapper.MapToDomain(userEntity);
+        throw new NotImplementedException();
     }
 }

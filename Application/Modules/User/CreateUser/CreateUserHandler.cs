@@ -19,7 +19,6 @@ ICloudStorage cloudStorage)
     /// </summary>
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
-        await emailService.SendEmailAsync(command.Email, "Welcome to XClone!", "Thank you for registering at XClone. We're excited to have you on board!");
         if (await uow.UserRepository.UsernameOrEmailExists(command.Username, command.Email))
         {
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);
@@ -47,6 +46,11 @@ ICloudStorage cloudStorage)
             command.ProfilePicture != null ?
           profilePictureUrl : MediaConstants.DEFAULT_PROFILE_PICTURE_URL))
             ?? throw new ServiceErrorException(ResponseConstants.USER_CREATION_ERROR);
+
+        await emailService.SendEmailAsync(
+            response.Email,
+            
+        )
 
         return ResponseHelper.Create(new CreateUserResponse(
             response.Id,

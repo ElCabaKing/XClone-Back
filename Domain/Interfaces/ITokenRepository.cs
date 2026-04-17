@@ -3,7 +3,7 @@ using Domain.Entities;
 
 namespace Domain.Interfaces;
 
-public interface ITokenRepository
+public interface ITokenRepository : IGenericRepository<Token>
 {
     public Task StoreRefreshTokenAsync(Token token);
     public Task<string?> GetRefreshTokenAsync(Guid userId);
