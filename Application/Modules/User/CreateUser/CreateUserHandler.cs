@@ -20,7 +20,9 @@ ICloudStorage cloudStorage)
     /// </summary>
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
-        if (await uow.UserRepository.UsernameOrEmailExists(command.Username, command.Email))
+        if (await uow.UserRepository.FirstOrDefaultAsync(
+            u => u.Username == command.Username || 
+            u.Email == command.Email) != null)
         {
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);
         }
