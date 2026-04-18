@@ -21,7 +21,7 @@ ICloudStorage cloudStorage)
     public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
     {
         if (await uow.UserRepository.FirstOrDefaultAsync(
-            u => u.Username == command.Username || 
+            u => u.Username == command.Username ||
             u.Email == command.Email) != null)
         {
             throw new AlreadyExistsException(ResponseConstants.EMAIL_USERNAME_ALREADY_EXISTS);
@@ -30,19 +30,12 @@ ICloudStorage cloudStorage)
         var HashedPassword = passwordService.HashPassword(command.Password) ??
             throw new ServiceErrorException(ResponseConstants.HASHING_ERROR);
 
+        var profilePictureUrl = await cloudStorage.UploadFileAsync(
+    command.ProfilePicture,
+    command.ProfilePictureFileName,
+    MediaConstants.PROFILE_PICTURES_FOLDER
+);
 
-        string? profilePictureUrl = null;
-
-        if (command.ProfilePicture != null)
-        {
-            await using var stream = command.ProfilePicture;
-
-            profilePictureUrl = await cloudStorage.UploadFileAsync(
-               stream,
-               command.ProfilePictureFileName!
-           );
-        }
-        
         User newUser = new()
         {
             Id = Guid.NewGuid(),
@@ -58,7 +51,7 @@ ICloudStorage cloudStorage)
 
         await uow.SaveChangesAsync();
 
-        EmailTemplate email = await  uow.EmailTemplateRepository.FirstOrDefaultAsync(email => email.Name == EmailTemplateConstants.WELCOME_EMAIL_TEMPLATE) ??
+        EmailTemplate email = await uow.EmailTemplateRepository.FirstOrDefaultAsync(email => email.Name == EmailTemplateConstants.WELCOME_EMAIL_TEMPLATE) ??
            throw new NotFoundException(ResponseConstants.EMAIL_TEMPLATE_NOT_FOUND);
 
         await emailService.SendEmailAsync(

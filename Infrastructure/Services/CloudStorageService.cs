@@ -15,11 +15,21 @@ public class CloudStorageService(Cloudinary cloudinary) : ICloudStorage
         throw new NotImplementedException();
     }
 
-    public async Task<string> UploadFileAsync(Stream fileStream, string fileName)
+    public async Task<string?> UploadFileAsync(
+      Stream? fileStream,
+      string? fileName,
+      string folder
+  )
     {
+        if (fileStream == null || fileStream.Length == 0)
+        {
+            return null;
+        }
+
         var uploadParams = new ImageUploadParams
         {
-            File = new FileDescription(fileName, fileStream)
+            File = new FileDescription(fileName!, fileStream),
+            Folder = folder
         };
 
         var uploadResult = await cloudinary.UploadAsync(uploadParams);
@@ -30,7 +40,9 @@ public class CloudStorageService(Cloudinary cloudinary) : ICloudStorage
         }
         else
         {
-            throw new ServiceErrorException(ResponseConstants.CLOUD_ERROR(uploadResult.Error.Message));
+            throw new ServiceErrorException(
+                ResponseConstants.CLOUD_ERROR(uploadResult.Error.Message)
+            );
         }
     }
 }

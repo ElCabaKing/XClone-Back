@@ -13,6 +13,9 @@ namespace AppWeb.Controllers
     {
         [EnableRateLimiting("Fixed")]
         [HttpPost("login")]
+        [EndpointSummary ("Login de usuario")]
+        [EndpointDescription("Permite a un usuario autenticarse y obtener un token de acceso.")]
+        [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             if (!ModelState.IsValid)

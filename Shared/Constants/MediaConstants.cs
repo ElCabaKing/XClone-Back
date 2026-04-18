@@ -10,4 +10,8 @@ public static class MediaConstants
 
     public const string PROFILE_TOO_LARGE = "La imagen de perfil excede el tamaño máximo permitido de 5 MB.";
     public const string PROFILE_INVALID_TYPE = "El tipo de archivo de la imagen de perfil no es válido. Solo se permiten JPEG, PNG y GIF.";
+
+
+    public const string PROFILE_PICTURES_FOLDER = "profile_pictures";
+    public const string POST_IMAGES_FOLDER = "post_images";
 }

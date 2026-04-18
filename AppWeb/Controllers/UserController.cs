@@ -16,6 +16,9 @@ namespace AppWeb.Controllers
     {
 
         [HttpPost("create")]
+        [EndpointSummary ("Creación de usuario")]
+        [EndpointDescription("Permite crear un nuevo usuario con los datos proporcionados.")]
+        [ProducesResponseType(typeof(CreateUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateUser([FromForm] CreateUserRequest request)
         {
             if (!ModelState.IsValid)
@@ -32,9 +35,12 @@ namespace AppWeb.Controllers
                 request.ProfilePicture?.ContentType
            );
             var result = await createUserHandler.Handle(command);
-            return Ok(result);
+            return Created("/users/" + result.Data.Id, result);
         }
         [HttpPut("update")]
+        [EndpointSummary ("Actualización de usuario")]
+        [EndpointDescription("Permite actualizar los datos de un usuario existente.")]
+        [ProducesResponseType(typeof(UpdateUserResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateUser([FromForm] UpdateUserRequest request)
         {
             if (!ModelState.IsValid)
