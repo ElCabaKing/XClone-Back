@@ -10,7 +10,7 @@ using Shared.Helpers;
 
 namespace Infrastructure.Services;
 
-public class TokenService (IOptions<JwtSettings> options): ITokenService
+public class JWTTokenService (IOptions<JwtSettings> options): ITokenService
 {
     public string CreateRefreshToken()
     {

@@ -15,6 +15,7 @@ using Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Shared.Constants;
 using Infrastructure.Unity;
+using StackExchange.Redis;
 
 namespace Infrastructure;
 
@@ -26,7 +27,6 @@ public static class DependencyInjection
         //Repositories configuration
         services.AddScoped<IUOW, UOW>();
         services.AddScoped<IUserRepository, UserRepository>();
-        services.AddScoped<ITokenRepository, TokenRepository>();
 
 
         //External services configuration
@@ -40,7 +40,7 @@ public static class DependencyInjection
         services.Configure<JwtSettings>(
 configuration.GetSection("Jwt"));
         ConfigureAuthentication(services, configuration);
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ITokenService, JWTTokenService>();
 
         services.Configure<BrevoSettings>(
            configuration.GetSection("Mail"));
@@ -50,11 +50,15 @@ configuration.GetSection("Jwt"));
         Microsoft.Extensions.Options.IOptions<BrevoSettings>
     >().Value);
 
-      services.AddScoped<IEmailService, BrevoEmailService>();
+        services.AddScoped<IEmailService, BrevoEmailService>();
 
+        services.AddSingleton<IConnectionMultiplexer>(sp => 
+        ConnectionMultiplexer.Connect(configuration[ConfigurationConstants.RedisConnectionString] ??
+        throw new BadConfigurationException("Redis connection string is not configured.")));
 
+        services.AddScoped(typeof(ITokenCacheServiceGeneric<>), typeof(TokenCacheService<>));
 
-
+        
         return services;
     }
 

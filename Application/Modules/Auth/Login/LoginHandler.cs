@@ -28,12 +28,7 @@ IPasswordService passwordService)
 
         var token = tokenService.CreateToken(user.Id);
         var refreshToken = tokenService.CreateRefreshToken();
-        await uow.TokenRepository.StoreRefreshTokenAsync(new Token
-        {
-            UserId = user.Id,
-            RefreshToken = refreshToken,
-            ExpiresAt = DateTime.UtcNow.AddDays(30)
-        });
+      
 
         return new LoginResponse
         {

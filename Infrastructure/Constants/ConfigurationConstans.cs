@@ -21,6 +21,9 @@ public class ConfigurationConstants
     public const string MailSmtpHost = "Mail:SmtpHost";
     public const string MailSmtpPort = "Mail:SmtpPort";
     public const string MailEmailFrom = "Mail:EmailFrom";
+
+    // Redis configuration keys
+    public const string RedisConnectionString = "Redis:ConnectionString";
     
 
 }

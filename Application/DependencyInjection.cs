@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Application.Modules.Auth.Login;
 using Application.Modules.Users.UpdateProfile;
 using Application.Modules.Auth.Register;
+using Application.Modules.Auth.RecoveryPassword;
 
 
 namespace Application;
@@ -17,6 +18,7 @@ public static class DependencyInjection
         //Auth Module
         services.AddScoped<LoginHandler>();
         services.AddScoped<RegisterHandler>();
+        services.AddScoped<RecoveryPasswordHandler>();
         return services;
     }
 }

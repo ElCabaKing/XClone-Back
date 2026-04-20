@@ -1,4 +1,5 @@
 using Application.Modules.Auth.Login;
+using Application.Modules.Auth.RecoveryPassword;
 using Application.Modules.Auth.Register;
 using AppWeb.Requests.Auth;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,8 @@ namespace AppWeb.Controllers
     [ApiController]
     public class AuthController(
         LoginHandler loginHandler,
-        RegisterHandler registerHandler
+        RegisterHandler registerHandler,
+        RecoveryPasswordHandler recoveryPasswordHandler
     ) : ControllerBase
     {
         [EnableRateLimiting("Fixed")]
@@ -59,6 +61,14 @@ namespace AppWeb.Controllers
            );
             var result = await registerHandler.Handle(command);
             return Created("/users/" + result.Data.Id, result);
+        }
+
+        [HttpPost("recover")]
+        public async Task<IActionResult> RecoverPassword([FromBody] RecoveryPasswordRequest request)
+        {
+            var command = new RecoveryPasswordCommand(request.Email);
+            var result = await recoveryPasswordHandler.Handle(command);
+            return Ok(result);
         }
     }
 }
