@@ -1,17 +1,16 @@
 using Application.Interfaces;
+using Infrastructure.Settings;
 using MailKit.Net.Smtp;
-using MailKit.Security;
 using MimeKit;
 
 namespace Infrastructure.Services;
-
-public class EmailServiceMailTrap : IEmailService
+public class BrevoEmailService (BrevoSettings brevoSettings): IEmailService
 {
     public async Task SendEmailAsync(string to, string subject, string body)
     {
         var email = new MimeMessage();
 
-        email.From.Add(new MailboxAddress("Test", "test@example.com"));
+        email.From.Add(MailboxAddress.Parse(brevoSettings.EmailFrom));
         email.To.Add(MailboxAddress.Parse(to));
         email.Subject = subject;
 
@@ -22,21 +21,16 @@ public class EmailServiceMailTrap : IEmailService
 
         using var smtp = new SmtpClient();
 
-        await smtp.ConnectAsync(
-            "sandbox.smtp.mailtrap.io",
-            2525,
-            SecureSocketOptions.StartTls
-        );
+        smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+        await smtp.ConnectAsync(brevoSettings.SmtpHost, brevoSettings.SmtpPort, MailKit.Security.SecureSocketOptions.SslOnConnect);
 
         await smtp.AuthenticateAsync(
-            "a14267feae481d",
-            "91bb3c6e8164fe"
+            brevoSettings.ServiceMail,
+            brevoSettings.SmtpKey
         );
 
         await smtp.SendAsync(email);
-
         await smtp.DisconnectAsync(true);
-
-        Console.WriteLine("Sent");
     }
 }

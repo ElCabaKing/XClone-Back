@@ -1,7 +1,10 @@
 
 namespace Infrastructure.Settings;
-public class MailjetSettings
+public class BrevoSettings
 {
-    public string ApiKey { get; set; } = null!;
-    public string SecretKey { get; set; } = null!;
+    public string SmtpHost { get; set; } = default!;
+    public int SmtpPort { get; set; }
+    public string ServiceMail { get; set; } = default!;
+    public string SmtpKey { get; set; } = default!;
+    public string EmailFrom { get; set; } = default!;           
 }

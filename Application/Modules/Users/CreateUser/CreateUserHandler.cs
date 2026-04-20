@@ -30,12 +30,8 @@ ICloudStorage cloudStorage)
         var HashedPassword = passwordService.HashPassword(command.Password) ??
             throw new ServiceErrorException(ResponseConstants.HASHING_ERROR);
 
-        var profilePictureUrl = await cloudStorage.UploadFileAsync(
-    command.ProfilePicture,
-    command.ProfilePictureFileName,
-    MediaConstants.PROFILE_PICTURES_FOLDER
-);
 
+    
         User newUser = new()
         {
             Id = Guid.NewGuid(),
@@ -44,7 +40,8 @@ ICloudStorage cloudStorage)
             PasswordHash = HashedPassword,
             FirstName = command.FirstName,
             LastName = command.LastName,
-            ProfilePictureUrl = profilePictureUrl ?? MediaConstants.DEFAULT_PROFILE_PICTURE_URL
+            ProfilePictureUrl = await profilePictureUrl(command)
+             ?? MediaConstants.DEFAULT_PROFILE_PICTURE_URL
         };
         var response = await uow.UserRepository.Create(newUser)
             ?? throw new ServiceErrorException(ResponseConstants.USER_CREATION_ERROR);
@@ -71,6 +68,18 @@ ICloudStorage cloudStorage)
 
         );
 
+    }
+    private async Task<string?> profilePictureUrl(CreateUserCommand command)
+    {
+        if (command.ProfilePicture == null || command.ProfilePictureFileName == null || command.ProfilePictureContentType == null)
+            return null;
+
+        var uploadResult = await cloudStorage.UploadFileAsync(
+            command.ProfilePicture,
+            command.ProfilePictureFileName,
+            "profile-pictures") ?? throw new ServiceErrorException(ResponseConstants.CLOUD_ERROR(command.ProfilePictureFileName));
+            
+        return uploadResult;
     }
 
 }

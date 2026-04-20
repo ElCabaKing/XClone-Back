@@ -14,7 +14,6 @@ using System.Text;
 using Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Shared.Constants;
-using Mailjet.Client;
 using Infrastructure.Unity;
 
 namespace Infrastructure;
@@ -33,11 +32,7 @@ public static class DependencyInjection
         //External services configuration
         services.AddSingleton(ConfigureCloudinary(configuration));
 
-        services.AddSingleton(ConfigureMailjet(configuration));
-
         services.AddScoped<IPasswordService, PasswordService>();
-
-        services.AddScoped<IEmailService, EmailServiceMailTrap>();
 
         services.AddScoped<ICloudStorage, CloudStorageService>();
         ConfigureDatabase(services, configuration);
@@ -47,17 +42,22 @@ configuration.GetSection("Jwt"));
         ConfigureAuthentication(services, configuration);
         services.AddScoped<ITokenService, TokenService>();
 
+        services.Configure<BrevoSettings>(
+           configuration.GetSection("Mail"));
+
+        services.AddSingleton(sp =>
+    sp.GetRequiredService<
+        Microsoft.Extensions.Options.IOptions<BrevoSettings>
+    >().Value);
+
+      services.AddScoped<IEmailService, BrevoEmailService>();
+
+
 
 
         return services;
     }
 
-    public static MailjetClient ConfigureMailjet(IConfiguration configuration)
-    {
-        var apiKey = configuration[ConfigurationConstants.MailjetApiKey] ?? throw new BadConfigurationException("Mailjet API key is not configured.");
-        var apiSecret = configuration[ConfigurationConstants.MailjetApiSecret] ?? throw new BadConfigurationException("Mailjet API secret is not configured.");
-        return new MailjetClient(apiKey, apiSecret);
-    }
 
     public static void ConfigureDatabase(IServiceCollection services, IConfiguration configuration)
     {

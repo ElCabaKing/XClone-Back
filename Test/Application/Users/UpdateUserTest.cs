@@ -1,10 +1,10 @@
 using Moq;
-using Application.Modules.User.UpdateUser;
+using Application.Modules.Users.UpdateUser;
 using Application.Interfaces;
 using Domain.Interfaces;
 using Domain.Exceptions;
 
-namespace Test.Application.User;
+namespace Test.Application.Users;
 
 public class UpdateUserTest
 {
@@ -28,13 +28,13 @@ public class UpdateUserTest
             LastName = "Name"
         };
 
-        userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(userId))
+        userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId))
             .ReturnsAsync(existingUser);
 
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
-        userRepositoryMock.Setup(repo => repo.UpdateUserAsync(It.IsAny<Domain.Entities.User>()))
+        userRepositoryMock.Setup(repo => repo.Update(It.IsAny<Domain.Entities.User>()))
             .ReturnsAsync(new Domain.Entities.User
             {
                 Id = userId,
@@ -54,7 +54,7 @@ public class UpdateUserTest
         Assert.NotNull(result);
         Assert.Equal("New", result.Data.FirstName);
         Assert.Equal("Name", result.Data.LastName);
-        userRepositoryMock.Verify(repo => repo.UpdateUserAsync(It.IsAny<Domain.Entities.User>()), Times.Once);
+        userRepositoryMock.Verify(repo => repo.Update(It.IsAny<Domain.Entities.User>()), Times.Once);
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class UpdateUserTest
 
         uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
 
-        userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<Guid>()))
+        userRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync((Domain.Entities.User?)null);
 
         var handler = new UpdateUserHandler(uowMock.Object);
@@ -87,7 +87,7 @@ public class UpdateUserTest
 
         uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
 
-        userRepositoryMock.Setup(repo => repo.GetUserByIdAsync(It.IsAny<Guid>()))
+        userRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(new Exception("Database error"));
 
         var handler = new UpdateUserHandler(uowMock.Object);

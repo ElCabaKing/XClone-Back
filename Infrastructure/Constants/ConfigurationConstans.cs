@@ -15,8 +15,12 @@ public class ConfigurationConstants
     public const string MongoConnectionString = "MongoDb:ConnectionString";
     public const string ConnectionString = "DefaultConnection";
 
-    // Mailjet configuration keys
-    public const string MailjetApiKey = "Mailjet:ApiKey";
-    public const string MailjetApiSecret = "Mailjet:ApiSecret";
+    // Mail configuration keys
+    public const string MailSmtpKey = "Mail:SmtpKey";
+    public const string MailServiceMail = "Mail:ServiceMail";
+    public const string MailSmtpHost = "Mail:SmtpHost";
+    public const string MailSmtpPort = "Mail:SmtpPort";
+    public const string MailEmailFrom = "Mail:EmailFrom";
+    
 
 }
