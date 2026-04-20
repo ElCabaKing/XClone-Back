@@ -23,7 +23,10 @@ public class BrevoEmailService (BrevoSettings brevoSettings): IEmailService
 
         smtp.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-        await smtp.ConnectAsync(brevoSettings.SmtpHost, brevoSettings.SmtpPort, MailKit.Security.SecureSocketOptions.SslOnConnect);
+        await smtp.ConnectAsync(
+        brevoSettings.SmtpHost, 
+        brevoSettings.SmtpPort, 
+        MailKit.Security.SecureSocketOptions.StartTls);
 
         await smtp.AuthenticateAsync(
             brevoSettings.ServiceMail,

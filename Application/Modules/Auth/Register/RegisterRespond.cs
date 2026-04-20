@@ -1,6 +1,6 @@
-namespace Application.Modules.Users.CreateUser;
+namespace Application.Modules.Auth.Register;
 
-public class CreateUserResponse(
+public class RegisterResponse(
     Guid id, 
     string username, 
     string email, 

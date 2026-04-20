@@ -1,4 +1,4 @@
-namespace Application.Modules.Users.CreateUser;
+namespace Application.Modules.Auth.Register;
 
 public class CreateUserCommand(
     string username, 

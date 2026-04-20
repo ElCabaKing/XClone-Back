@@ -1,6 +1,6 @@
-namespace Application.Modules.Users.UpdateUser;
+namespace Application.Modules.Users.UpdateProfile;
 
-public class UpdateUserCommand(
+public class UpdateProfileCommand(
     Guid userId,
     string? username,
     string? email,

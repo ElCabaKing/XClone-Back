@@ -5,7 +5,7 @@ using Shared.Constants;
 
 namespace AppWeb.Requests.User;
 
-public class UpdateUserRequest
+public class UpdateProfileRequest
 {
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]
     public Guid UserId { get; set; } = default!;

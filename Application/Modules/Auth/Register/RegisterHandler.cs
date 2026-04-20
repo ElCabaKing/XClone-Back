@@ -6,9 +6,9 @@ using Shared.Constants;
 using Shared.Generics;
 using Shared.Helpers;
 
-namespace Application.Modules.Users.CreateUser;
+namespace Application.Modules.Auth.Register;
 
-public class CreateUserHandler(
+public class RegisterHandler(
     IEmailService emailService,
 IPasswordService passwordService,
 IUOW uow,
@@ -18,7 +18,7 @@ ICloudStorage cloudStorage)
     /// <summary>
     /// Maneja la creación de un nuevo usuario
     /// </summary>
-    public async Task<GenericResponse<CreateUserResponse>> Handle(CreateUserCommand command)
+    public async Task<GenericResponse<RegisterResponse>> Handle(CreateUserCommand command)
     {
         if (await uow.UserRepository.FirstOrDefaultAsync(
             u => u.Username == command.Username ||
@@ -31,7 +31,7 @@ ICloudStorage cloudStorage)
             throw new ServiceErrorException(ResponseConstants.HASHING_ERROR);
 
 
-    
+
         User newUser = new()
         {
             Id = Guid.NewGuid(),
@@ -58,7 +58,7 @@ ICloudStorage cloudStorage)
            Replace("{{first_name}}", response.FirstName)
         );
 
-        return ResponseHelper.Create(new CreateUserResponse(
+        return ResponseHelper.Create(new RegisterResponse(
             response.Id,
             response.Username,
             response.Email,
@@ -78,7 +78,7 @@ ICloudStorage cloudStorage)
             command.ProfilePicture,
             command.ProfilePictureFileName,
             "profile-pictures") ?? throw new ServiceErrorException(ResponseConstants.CLOUD_ERROR(command.ProfilePictureFileName));
-            
+
         return uploadResult;
     }
 

@@ -40,26 +40,30 @@ public partial class XDbContext : DbContext
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
+    public virtual DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+
     public virtual DbSet<Post> Posts { get; set; }
 
-    public virtual DbSet<Survey> Surveys { get; set; }
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
-    public virtual DbSet<Token> Tokens { get; set; }
+    public virtual DbSet<Survey> Surveys { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
     public virtual DbSet<UserStatus> UserStatuses { get; set; }
+
+    public virtual DbSet<VerificationToken> VerificationTokens { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BanList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83FCE791BE6");
+            entity.HasKey(e => e.Id).HasName("PK__ban_list__3213E83F5F6F5654");
 
             entity.ToTable("ban_list");
 
-            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F6F2083C3F").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.BannedBy }, "UQ__ban_list__513803F6D732232A").IsUnique();
 
             entity.HasIndex(e => e.BannedBy, "idx_ban_list_banned_by");
 
@@ -86,7 +90,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<ChatRoom>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83FE4EE8765");
+            entity.HasKey(e => e.Id).HasName("PK__chat_roo__3213E83F9D75C2F5");
 
             entity.ToTable("chat_room");
 
@@ -108,7 +112,7 @@ public partial class XDbContext : DbContext
                         .HasConstraintName("FK__chat_part__chat___6D2D2E85"),
                     j =>
                     {
-                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE867E312EC04");
+                        j.HasKey("ChatId", "UserId").HasName("PK__chat_par__169FE86742D73EA4");
                         j.ToTable("chat_participants");
                         j.HasIndex(new[] { "UserId" }, "idx_chat_participants_user_id");
                         j.IndexerProperty<Guid>("ChatId").HasColumnName("chat_id");
@@ -118,11 +122,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<CommentLikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F07833D21");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FB984708E");
 
             entity.ToTable("comment_like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C76066C01B9283").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.CommentId }, "UQ__comment___D7C76066612610D2").IsUnique();
 
             entity.HasIndex(e => e.CommentId, "idx_comment_like_list_comment_id");
 
@@ -149,7 +153,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<CommentList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83FA8847B68");
+            entity.HasKey(e => e.Id).HasName("PK__comment___3213E83F7C954731");
 
             entity.ToTable("comment_list");
 
@@ -192,7 +196,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<EmailTemplate>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__email_te__3213E83FE1C3C4BA");
+            entity.HasKey(e => e.Id).HasName("PK__email_te__3213E83FA2E42DEB");
 
             entity.ToTable("email_templates");
 
@@ -216,11 +220,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<FollowList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83F5FFA02B7");
+            entity.HasKey(e => e.Id).HasName("PK__follow_l__3213E83FCA707842");
 
             entity.ToTable("follow_list");
 
-            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A63041A331").IsUnique();
+            entity.HasIndex(e => new { e.FollowerId, e.FollowingId }, "UQ__follow_l__CAC186A686D55DB0").IsUnique();
 
             entity.HasIndex(e => e.FollowerId, "idx_follow_list_follower_id");
 
@@ -247,11 +251,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Hashtag>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83F67C36049");
+            entity.HasKey(e => e.Id).HasName("PK__hashtags__3213E83F5839FE94");
 
             entity.ToTable("hashtags");
 
-            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1BAE4A8C20").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__hashtags__72E12F1B5F3D6311").IsUnique();
 
             entity.HasIndex(e => e.Name, "idx_hashtags_name");
 
@@ -268,11 +272,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<HashtagPost>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83F2BC017BF");
+            entity.HasKey(e => e.Id).HasName("PK__hashtag___3213E83F135A1C6A");
 
             entity.ToTable("hashtag_post");
 
-            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9B8349F8DB").IsUnique();
+            entity.HasIndex(e => new { e.HashtagId, e.PostId }, "UQ__hashtag___8671FC9B0272C0D9").IsUnique();
 
             entity.HasIndex(e => e.HashtagId, "idx_hashtag_post_hashtag_id");
 
@@ -298,11 +302,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<LikeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83F78A8EE3A");
+            entity.HasKey(e => e.Id).HasName("PK__like_lis__3213E83F2795A911");
 
             entity.ToTable("like_list");
 
-            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F780A28F946").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.PostId }, "UQ__like_lis__CA534F785E4827FB").IsUnique();
 
             entity.HasIndex(e => e.PostId, "idx_like_list_post_id");
 
@@ -329,7 +333,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Message>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83F693F8C12");
+            entity.HasKey(e => e.Id).HasName("PK__messages__3213E83FC47CE4A9");
 
             entity.ToTable("messages");
 
@@ -365,11 +369,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<MuteList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83FA1508B5A");
+            entity.HasKey(e => e.Id).HasName("PK__mute_lis__3213E83F66C7781B");
 
             entity.ToTable("mute_list");
 
-            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08C062D58B4").IsUnique();
+            entity.HasIndex(e => new { e.UserId, e.MutedBy }, "UQ__mute_lis__C6E2D08C098F77B4").IsUnique();
 
             entity.HasIndex(e => e.MutedBy, "idx_mute_list_muted_by");
 
@@ -396,7 +400,7 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83F7CA06A2D");
+            entity.HasKey(e => e.Id).HasName("PK__notifica__3213E83FA1D07D61");
 
             entity.ToTable("notifications");
 
@@ -431,9 +435,37 @@ public partial class XDbContext : DbContext
                 .HasConstraintName("FK__notificat__user___789EE131");
         });
 
+        modelBuilder.Entity<PasswordResetToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Password__3213E83FEEACDB72");
+
+            entity.ToTable("PasswordResetToken");
+
+            entity.HasIndex(e => e.ResetToken, "UQ__Password__25F405EB42CC665A").IsUnique();
+
+            entity.HasIndex(e => e.UserId, "idx_password_reset_token_user_id");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
+            entity.Property(e => e.ResetToken)
+                .HasMaxLength(255)
+                .HasColumnName("reset_token");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PasswordResetTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PasswordResetToken_User");
+        });
+
         modelBuilder.Entity<Post>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__post__3213E83F31D77DF6");
+            entity.HasKey(e => e.Id).HasName("PK__post__3213E83F0D0AB2AE");
 
             entity.ToTable("post");
 
@@ -483,9 +515,37 @@ public partial class XDbContext : DbContext
                 .HasConstraintName("FK__post__user_id__320C68B7");
         });
 
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__RefreshT__3213E83F98720F7A");
+
+            entity.ToTable("RefreshToken");
+
+            entity.HasIndex(e => e.RefreshToken1, "UQ__RefreshT__7FB69BAD942EFD04").IsUnique();
+
+            entity.HasIndex(e => e.UserId, "idx_refresh_token_user_id");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
+            entity.Property(e => e.RefreshToken1)
+                .HasMaxLength(255)
+                .HasColumnName("refresh_token");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_RefreshToken_User");
+        });
+
         modelBuilder.Entity<Survey>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83F0195F16C");
+            entity.HasKey(e => e.Id).HasName("PK__survey__3213E83F243B7C4B");
 
             entity.ToTable("survey");
 
@@ -506,43 +566,15 @@ public partial class XDbContext : DbContext
                 .HasConstraintName("FK__survey__post_id__37C5420D");
         });
 
-        modelBuilder.Entity<Token>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__token__3213E83F588F41F3");
-
-            entity.ToTable("token");
-
-            entity.HasIndex(e => e.RefreshToken, "UQ__token__7FB69BAD3395612B").IsUnique();
-
-            entity.HasIndex(e => e.UserId, "idx_token_user_id");
-
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnName("created_at");
-            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
-            entity.Property(e => e.RefreshToken)
-                .HasMaxLength(255)
-                .HasColumnName("refresh_token");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Tokens)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Token_User");
-        });
-
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user__3213E83F9068EBF8");
+            entity.HasKey(e => e.Id).HasName("PK__user__3213E83F993060CB");
 
             entity.ToTable("user");
 
-            entity.HasIndex(e => e.Email, "UQ__user__AB6E6164BD34F214").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__user__AB6E61649D47CD66").IsUnique();
 
-            entity.HasIndex(e => e.Username, "UQ__user__F3DBC572A364634F").IsUnique();
+            entity.HasIndex(e => e.Username, "UQ__user__F3DBC572444D289A").IsUnique();
 
             entity.HasIndex(e => e.CreatedAt, "idx_user_created_at");
 
@@ -592,11 +624,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<UserRole>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83FFDD2DF07");
+            entity.HasKey(e => e.Id).HasName("PK__user_rol__3213E83FD532C07C");
 
             entity.ToTable("user_role");
 
-            entity.HasIndex(e => e.Name, "UQ__user_rol__72E12F1BEB2A9D74").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__user_rol__72E12F1B9A27D147").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)
@@ -609,11 +641,11 @@ public partial class XDbContext : DbContext
 
         modelBuilder.Entity<UserStatus>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83F833C1BAC");
+            entity.HasKey(e => e.Id).HasName("PK__user_sta__3213E83FEC6ACA4A");
 
             entity.ToTable("user_status");
 
-            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1B0D025C4C").IsUnique();
+            entity.HasIndex(e => e.Name, "UQ__user_sta__72E12F1B7D554900").IsUnique();
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Description)
@@ -622,6 +654,34 @@ public partial class XDbContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<VerificationToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Verifica__3213E83FC5A6C823");
+
+            entity.ToTable("VerificationToken");
+
+            entity.HasIndex(e => e.AccessToken, "UQ__Verifica__4EDC6DFCFCA90A8B").IsUnique();
+
+            entity.HasIndex(e => e.UserId, "idx_verification_token_user_id");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.AccessToken)
+                .HasMaxLength(255)
+                .HasColumnName("access_token");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.VerificationTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_VerificationToken_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

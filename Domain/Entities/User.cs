@@ -47,13 +47,17 @@ public partial class User
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
 
+    public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+
     public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
+
+    public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
     public virtual UserRole? Role { get; set; }
 
     public virtual UserStatus? Status { get; set; }
 
-    public virtual ICollection<Token> Tokens { get; set; } = new List<Token>();
+    public virtual ICollection<VerificationToken> VerificationTokens { get; set; } = new List<VerificationToken>();
 
     public virtual ICollection<ChatRoom> Chats { get; set; } = new List<ChatRoom>();
 }

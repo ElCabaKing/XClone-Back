@@ -2,9 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using AppWeb.Decorators;
 using Shared.Constants;
 
-namespace AppWeb.Requests.User;
+namespace AppWeb.Requests.Auth;
 
-public class CreateUserRequest
+public class RegisterRequest
 {
     [Required(ErrorMessage = ValidationConstants.REQUIRED)]
     [MaxLength(150, ErrorMessage = ValidationConstants.MAX_LENGTH)]
