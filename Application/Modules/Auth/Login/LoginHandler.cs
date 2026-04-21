@@ -1,5 +1,6 @@
 
 
+using Application.Cache;
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -8,6 +9,7 @@ using Shared.Constants;
 namespace Application.Modules.Auth.Login;
 
 public class LoginHandler(ITokenService tokenService,
+ITokenCacheServiceGeneric<RefreshTokenCacheEntity> tokenCacheService,
 IUOW uow,
 IPasswordService passwordService)
 {
@@ -29,7 +31,7 @@ IPasswordService passwordService)
         var token = tokenService.CreateToken(user.Id);
         var refreshToken = tokenService.CreateRefreshToken();
       
-
+        await tokenCacheService.SaveAsync(new RefreshTokenCacheEntity { TokenHash = passwordService.HashPassword(refreshToken), UserId = user.Id });
         return new LoginResponse
         {
             Token = token,

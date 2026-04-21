@@ -1,6 +1,6 @@
 using Application.Interfaces;
 
-namespace Application.Modules.Auth.RecoveryPassword;
+namespace Application.Cache;
 
 public class RecoveryPasswordCacheEntity : ITokenCacheEntity
 {
