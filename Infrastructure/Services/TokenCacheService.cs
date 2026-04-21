@@ -17,7 +17,7 @@ public class TokenCacheService<T>(IConnectionMultiplexer connectionMultiplexer) 
 
     public async Task SaveAsync(T entity)
     {
-        var key = $"{entity.UserId}:{entity.Purpose}";
+        var key = $"{entity.Purpose}:{entity.UserId}";
         var ttl = entity.ExpiresAt - DateTime.UtcNow;
         if (ttl <= TimeSpan.Zero)
         {

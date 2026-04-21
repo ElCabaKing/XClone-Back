@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Domain.Entities;
 
-public partial class UserRole
+public partial class Role
 {
     public byte Id { get; set; }
 

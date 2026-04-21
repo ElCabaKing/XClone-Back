@@ -40,11 +40,13 @@ ICloudStorage cloudStorage)
             PasswordHash = HashedPassword,
             FirstName = command.FirstName,
             LastName = command.LastName,
-            ProfilePictureUrl = await profilePictureUrl(command)
+            ProfilePictureUrl = await ProfilePictureUrl(command)
              ?? MediaConstants.DEFAULT_PROFILE_PICTURE_URL
         };
-        var response = await uow.UserRepository.Create(newUser)
+        var response = await uow.UserRepository.Register(newUser)
             ?? throw new ServiceErrorException(ResponseConstants.USER_CREATION_ERROR);
+
+        
 
         await uow.SaveChangesAsync();
 
@@ -69,7 +71,7 @@ ICloudStorage cloudStorage)
         );
 
     }
-    private async Task<string?> profilePictureUrl(CreateUserCommand command)
+    private async Task<string?> ProfilePictureUrl(CreateUserCommand command)
     {
         if (command.ProfilePicture == null || command.ProfilePictureFileName == null || command.ProfilePictureContentType == null)
             return null;
