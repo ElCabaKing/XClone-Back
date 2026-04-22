@@ -13,4 +13,5 @@ public interface IGenericRepository<T> where T : class
     Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate);
     Task<List<T>> ToListAsync(Expression<Func<T, bool>> predicate);
     Task<bool> IfExists(Expression<Func<T, bool>> predicate);
+    Task<T[]?> GetAll();
 }

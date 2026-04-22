@@ -1,4 +1,5 @@
 using Application.Interfaces;
+using Application.Interfaces.Websockets;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -12,6 +13,7 @@ public class RegisterHandler(
     IEmailService emailService,
 IPasswordService passwordService,
 IUOW uow,
+IUserWebsocket userWebsocket,
 ICloudStorage cloudStorage)
 {
 
@@ -46,7 +48,7 @@ ICloudStorage cloudStorage)
         var response = await uow.UserRepository.Register(newUser)
             ?? throw new ServiceErrorException(ResponseConstants.USER_CREATION_ERROR);
 
-        
+        await userWebsocket.SendNotificationToAll($"Nuevo usuario registrado: {response.Username}");
 
         await uow.SaveChangesAsync();
 
@@ -59,6 +61,7 @@ ICloudStorage cloudStorage)
            email.Body.
            Replace("{{first_name}}", response.FirstName)
         );
+
 
         return ResponseHelper.Create(new RegisterResponse(
             response.Id,

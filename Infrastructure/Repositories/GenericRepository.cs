@@ -46,4 +46,9 @@ public class GenericRepository<T>(XDbContext context) : IGenericRepository<T> wh
     {
         return await _context.Set<T>().AnyAsync(predicate) ;
     }
+
+    public async Task<T[]?> GetAll()
+    {
+        return await _context.Set<T>().ToArrayAsync();
+    }
 }

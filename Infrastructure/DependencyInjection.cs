@@ -16,6 +16,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Shared.Constants;
 using Infrastructure.Unity;
 using StackExchange.Redis;
+using Infrastructure.Workers;
+using Infrastructure.Websockets;
+using Application.Interfaces.Websockets;
 
 namespace Infrastructure;
 
@@ -58,6 +61,13 @@ configuration.GetSection("Jwt"));
 
         services.AddScoped(typeof(ITokenCacheServiceGeneric<>), typeof(TokenCacheService<>));
 
+        //Workers
+        services.AddHostedService<TimerNotifyWorker>();
+
+        //Websockets
+        services.AddSignalR();
+        services.AddScoped<IUserWebsocket, UserWebsocket>();
+        
         
         return services;
     }

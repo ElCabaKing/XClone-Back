@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SignalR Notification Client</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --card: #ffffff;
+      --text: #1c2430;
+      --muted: #64748b;
+      --accent: #0ea5e9;
+      --ok: #16a34a;
+      --err: #dc2626;
+      --border: #dbe3ee;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at 10% 10%, #e7f3ff 0%, var(--bg) 35%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: min(900px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .status {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .status.connected { color: var(--ok); }
+    .status.disconnected { color: var(--err); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    @media (min-width: 860px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .panel {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      background: #fcfdff;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    button.secondary {
+      background: #334155;
+    }
+
+    .log {
+      height: 300px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 12px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    .help {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="head">
+      <h1>Cliente SignalR - Notifications Hub</h1>
+      <div id="status" class="status disconnected">Desconectado</div>
+    </header>
+
+    <section class="grid">
+      <article class="panel">
+        <h2>Conexion Hub</h2>
+        <label for="hubUrl">URL del Hub</label>
+        <input id="hubUrl" value="http://localhost:5282/notifications" />
+
+        <div class="row">
+          <button id="btnConnect">Conectar</button>
+          <button id="btnDisconnect" class="secondary">Desconectar</button>
+          <button id="btnClear" class="secondary">Limpiar Log</button>
+        </div>
+
+        <p class="help">Este cliente escucha el evento <strong>ReceiveNotification</strong>.</p>
+      </article>
+
+      <article class="panel">
+        <h2>Disparar registro (opcional)</h2>
+        <label for="apiUrl">URL API create user</label>
+        <input id="apiUrl" value="http://localhost:5282/api/auth/create" />
+
+        <label for="username">Username</label>
+        <input id="username" value="user_demo_" />
+
+        <label for="email">Email</label>
+        <input id="email" value="demo_@mail.com" />
+
+        <label for="password">Password</label>
+        <input id="password" value="Pass1234!" />
+
+        <label for="firstName">First Name</label>
+        <input id="firstName" value="Demo" />
+
+        <label for="lastName">Last Name</label>
+        <input id="lastName" value="User" />
+
+        <button id="btnRegister">Registrar Usuario</button>
+        <p class="help">Genera username/email unicos automaticamente con timestamp.</p>
+      </article>
+
+      <article class="panel" style="grid-column: 1 / -1;">
+        <h2>Eventos</h2>
+        <div id="log" class="log"></div>
+      </article>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+  <script>
+    const logEl = document.getElementById("log");
+    const statusEl = document.getElementById("status");
+
+    const hubUrlEl = document.getElementById("hubUrl");
+    const apiUrlEl = document.getElementById("apiUrl");
+
+    const usernameEl = document.getElementById("username");
+    const emailEl = document.getElementById("email");
+    const passwordEl = document.getElementById("password");
+    const firstNameEl = document.getElementById("firstName");
+    const lastNameEl = document.getElementById("lastName");
+
+    const btnConnect = document.getElementById("btnConnect");
+    const btnDisconnect = document.getElementById("btnDisconnect");
+    const btnRegister = document.getElementById("btnRegister");
+    const btnClear = document.getElementById("btnClear");
+
+    let connection = null;
+
+    function now() {
+      return new Date().toLocaleTimeString();
+    }
+
+    function log(message) {
+      logEl.textContent += `[${now()}] ${message}\n`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function setStatus(connected) {
+      statusEl.textContent = connected ? "Conectado" : "Desconectado";
+      statusEl.classList.toggle("connected", connected);
+      statusEl.classList.toggle("disconnected", !connected);
+    }
+
+    async function connect() {
+      if (connection) {
+        log("Ya existe una conexion activa.");
+        return;
+      }
+
+      const hubUrl = hubUrlEl.value.trim();
+      if (!hubUrl) {
+        log("Hub URL vacia.");
+        return;
+      }
+
+      connection = new signalR.HubConnectionBuilder()
+        .withUrl(hubUrl, {
+          withCredentials: true
+        })
+        .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+      connection.on("ReceiveNotification", (message) => {
+        log(`ReceiveNotification => ${message}`);
+      });
+
+      connection.onreconnecting((error) => {
+        setStatus(false);
+        log(`Reconectando... ${error ? error.message : ""}`);
+      });
+
+      connection.onreconnected((connectionId) => {
+        setStatus(true);
+        log(`Reconectado. connectionId=${connectionId}`);
+      });
+
+      connection.onclose((error) => {
+        setStatus(false);
+        log(`Conexion cerrada. ${error ? error.message : ""}`);
+      });
+
+      try {
+        await connection.start();
+        setStatus(true);
+        log("SignalR conectado correctamente.");
+      } catch (error) {
+        log(`Error al conectar: ${error.message}`);
+        connection = null;
+      }
+    }
+
+    async function disconnect() {
+      if (!connection) {
+        log("No hay conexion para cerrar.");
+        return;
+      }
+      try {
+        await connection.stop();
+      } finally {
+        connection = null;
+        setStatus(false);
+        log("SignalR desconectado.");
+      }
+    }
+
+    async function registerUser() {
+      const apiUrl = apiUrlEl.value.trim();
+      if (!apiUrl) {
+        log("API URL vacia.");
+        return;
+      }
+
+      const suffix = Date.now();
+      const username = `${usernameEl.value.trim()}${suffix}`;
+      const email = `${emailEl.value.trim().replace("@", `_${suffix}@`)}`;
+
+      const form = new FormData();
+      form.append("username", username);
+      form.append("email", email);
+      form.append("password", passwordEl.value.trim());
+      form.append("firstName", firstNameEl.value.trim());
+      form.append("lastName", lastNameEl.value.trim());
+
+      log(`Registrando usuario: ${username} / ${email}`);
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          body: form,
+          credentials: "include"
+        });
+
+        const text = await response.text();
+        log(`CreateUser status=${response.status}`);
+        log(`CreateUser body=${text}`);
+      } catch (error) {
+        log(`Error en create user: ${error.message}`);
+      }
+    }
+
+    btnConnect.addEventListener("click", connect);
+    btnDisconnect.addEventListener("click", disconnect);
+    btnRegister.addEventListener("click", registerUser);
+    btnClear.addEventListener("click", () => {
+      logEl.textContent = "";
+    });
+  </script>
+</body>
+</html>

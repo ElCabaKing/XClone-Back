@@ -28,21 +28,25 @@ public class TokenCacheService<T>(IConnectionMultiplexer connectionMultiplexer) 
         await _database.StringSetAsync(key, value, ttl);
     }
 
-    public async Task<T?> VerifyAndConsumeAsync(Guid userId)
+    public async Task<T?> GetAndDeleteAsync(T entity)
     {
-        var pattern = $"{userId}:*";
+        var key = $"{entity.Purpose}:{entity.UserId}";
+        var value = await _database.StringGetAsync(key);
 
-        foreach (var redisKey in _server.Keys(_database.Database, pattern))
-        {
-            var cachedValue = await _database.StringGetDeleteAsync(redisKey);
-            if (!cachedValue.HasValue)
-            {
-                continue;
-            }
+        if (!value.HasValue)
+            return default;
 
-            return JsonSerializer.Deserialize<T>(cachedValue.ToString());
-        }
+        await _database.KeyDeleteAsync(key); // Elimina después de leer
 
-        return default;
+        return JsonSerializer.Deserialize<T>(value.ToString());
     }
+
+    public async Task<bool> ExistsAsync(string purpose, Guid userId)
+    {
+        var key = $"{purpose}:{userId}";
+        return await _database.KeyExistsAsync(key);
+    }
+
+
+
 }

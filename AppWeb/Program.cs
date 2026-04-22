@@ -4,6 +4,7 @@ using AppWeb;
 using AppWeb.Middlewares;
 using DotNetEnv;
 using Infrastructure;
+using Infrastructure.Websockets;
 using Scalar.AspNetCore;
 using Serilog;
 
@@ -34,8 +35,16 @@ var app = builder.Build();
 
 app.UseCors(
     policy =>
-        policy.AllowCredentials()
-        .WithOrigins("http://localhost:3000")
+        policy.WithOrigins(
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "http://localhost:5500",
+            "http://127.0.0.1:5500")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
 );
 
 // Configure the HTTP request pipeline.
@@ -53,6 +62,8 @@ app.UseRateLimiter();
 app.UseHttpsRedirection();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notifications");
 
 
 app.Run();
