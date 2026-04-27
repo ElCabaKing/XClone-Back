@@ -1,6 +1,7 @@
 using Moq;
-using Application.Modules.Users.CreateUser;
+using Application.Modules.Auth.Register;
 using Application.Interfaces;
+using Application.Interfaces.Websockets;
 using Domain.Interfaces;
 using Domain.Exceptions;
 using Domain.Entities;
@@ -19,6 +20,7 @@ public class CreateUserTest
         var userRepositoryMock = new Mock<IUserRepository>();
         var emailTemplateRepositoryMock = new Mock<IEmailTemplateRepository>();
         var cloudStorageMock = new Mock<ICloudStorage>();
+        var userWebsocketMock = new Mock<IUserWebsocket>();
         var emailServiceMock = new Mock<IEmailService>();
 
         uowMock.Setup(uow => uow.UserRepository).Returns(userRepositoryMock.Object);
@@ -40,7 +42,7 @@ public class CreateUserTest
         cloudStorageMock.Setup(storage => storage.UploadFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync("http://example.com/profile.jpg");
 
-        userRepositoryMock.Setup(repo => repo.Create(It.IsAny<User>()))
+        userRepositoryMock.Setup(repo => repo.Register(It.IsAny<User>()))
             .ReturnsAsync((User user) => new User
             {
                 Id = Guid.NewGuid(),
@@ -51,7 +53,7 @@ public class CreateUserTest
                 ProfilePictureUrl = user.ProfilePictureUrl
             });
 
-        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, cloudStorageMock.Object);
+        var handler = new RegisterHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, userWebsocketMock.Object, cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "epicouser@example.com", "Password123!", "Test", "User");
 
         // Act
@@ -63,7 +65,7 @@ public class CreateUserTest
         Assert.Equal(command.Email, result.Data.Email);
         Assert.Equal(command.FirstName, result.Data.FirstName);
         Assert.Equal(command.LastName, result.Data.LastName);
-        userRepositoryMock.Verify(repo => repo.Create(It.IsAny<User>()), Times.Once);
+        userRepositoryMock.Verify(repo => repo.Register(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]
@@ -81,7 +83,7 @@ public class CreateUserTest
         userRepositoryMock.Setup(repo => repo.FirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>()))
             .ReturnsAsync(new User());
 
-        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, cloudStorageMock.Object);
+        var handler = new RegisterHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, Mock.Of<IUserWebsocket>(), cloudStorageMock.Object);
         var command = new CreateUserCommand("existinguser", "new@example.com", "Password123!", "Test", "User");
 
         // Act & Assert
@@ -109,7 +111,7 @@ public class CreateUserTest
         cloudStorageMock.Setup(storage => storage.UploadFileAsync(It.IsAny<Stream>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(string.Empty); // Simula un fallo en la subida
 
-        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, cloudStorageMock.Object);
+        var handler = new RegisterHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, Mock.Of<IUserWebsocket>(), cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg");
 
         // Act & Assert
@@ -132,7 +134,7 @@ public class CreateUserTest
         userRepositoryMock.Setup(repo => repo.UsernameOrEmailExists(It.IsAny<string>(), It.IsAny<string>()))
             .ThrowsAsync(new ServiceErrorException("Database error"));
 
-        var handler = new CreateUserHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, cloudStorageMock.Object);
+        var handler = new RegisterHandler(emailServiceMock.Object, passwordServiceMock.Object, uowMock.Object, Mock.Of<IUserWebsocket>(), cloudStorageMock.Object);
         var command = new CreateUserCommand("testuser", "test@example.com", "Password123!", "Test", "User", new MemoryStream(), "profile.jpg"   );
 
         // Act & Assert

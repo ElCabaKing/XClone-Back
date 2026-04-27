@@ -1,5 +1,5 @@
 using Moq;
-using Application.Modules.Users.UpdateUser;
+using Application.Modules.Users.UpdateProfile;
 using Application.Interfaces;
 using Domain.Interfaces;
 using Domain.Exceptions;
@@ -44,8 +44,8 @@ public class UpdateUserTest
                 LastName = "Name"
             });
 
-        var handler = new UpdateUserHandler(uowMock.Object);
-        var command = new UpdateUserCommand(userId, "New", "Name", "test@example.com", null);
+        var handler = new UpdateProfileHandler(uowMock.Object);
+        var command = new UpdateProfileCommand(userId, "New", "Name", "test@example.com", null);
 
         // Act
         var result = await handler.Handle(command);
@@ -70,8 +70,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
             .ReturnsAsync((Domain.Entities.User?)null);
 
-        var handler = new UpdateUserHandler(uowMock.Object);
-        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
+        var handler = new UpdateProfileHandler(uowMock.Object);
+        var command = new UpdateProfileCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotFoundException>(async () => await handler.Handle(command));
@@ -90,8 +90,8 @@ public class UpdateUserTest
         userRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<Guid>()))
             .ThrowsAsync(new Exception("Database error"));
 
-        var handler = new UpdateUserHandler(uowMock.Object);
-        var command = new UpdateUserCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
+        var handler = new UpdateProfileHandler(uowMock.Object);
+        var command = new UpdateProfileCommand(Guid.NewGuid(), "New", "Name", "test@example.com", null);
 
         // Act & Assert
         await Assert.ThrowsAsync<Exception>(async () => await handler.Handle(command));
