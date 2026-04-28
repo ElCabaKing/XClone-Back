@@ -27,6 +27,10 @@ namespace AppWeb.Middlewares
 			{
 				await context.Response.WriteAsJsonAsync(ManageException(context, exception, StatusCodes.Status415UnsupportedMediaType));
 			}
+			catch (UnauthorizedAccessException exception)
+			{
+				await context.Response.WriteAsJsonAsync(ManageException(context, exception, StatusCodes.Status401Unauthorized));
+			}
 			catch (Exception exception)
 			{
 				var traceId = Guid.NewGuid();

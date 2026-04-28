@@ -30,7 +30,7 @@ namespace AppWeb.Controllers
                 request.Password
             );
             var result = await loginHandler.Handle(command);
-            Response.Cookies.Append("accessToken", result.Token, new CookieOptions
+            Response.Cookies.Append("access_token", result.Token, new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
