@@ -89,7 +89,7 @@ public class LoginTest
             Times.Once);
 
         var setCookieHeader = controller.Response.Headers["Set-Cookie"].ToString();
-        Assert.Contains("accessToken=jwt.token.here", setCookieHeader);
+        Assert.Contains("access_token=jwt.token.here", setCookieHeader);
         Assert.Contains("httponly", setCookieHeader, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("secure", setCookieHeader, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("samesite=none", setCookieHeader, StringComparison.OrdinalIgnoreCase);
